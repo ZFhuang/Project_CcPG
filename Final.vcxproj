@@ -148,23 +148,23 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\Character\Character.cpp" />
-    <ClCompile Include="..\Classes\Character\Player.cpp" />
-    <ClCompile Include="..\Classes\GameManager.cpp" />
-    <ClCompile Include="..\Classes\MainController.cpp" />
-    <ClCompile Include="..\Classes\Scene\TestScene.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="res\AppDelegate.cpp" />
+    <ClCompile Include="res\Character\Character.cpp" />
+    <ClCompile Include="res\Character\Player.cpp" />
+    <ClCompile Include="res\GameManager.cpp" />
+    <ClCompile Include="res\MainController.cpp" />
+    <ClCompile Include="res\Scene\TestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Classes\AppDelegate.h" />
-    <ClInclude Include="..\Classes\Character\Character.h" />
-    <ClInclude Include="..\Classes\Character\Player.h" />
-    <ClInclude Include="..\Classes\GameManager.h" />
-    <ClInclude Include="..\Classes\MainConfig.h" />
-    <ClInclude Include="..\Classes\MainController.h" />
-    <ClInclude Include="..\Classes\Scene\TestScene.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="res\AppDelegate.h" />
+    <ClInclude Include="res\Character\Character.h" />
+    <ClInclude Include="res\Character\Player.h" />
+    <ClInclude Include="res\GameManager.h" />
+    <ClInclude Include="res\MainConfig.h" />
+    <ClInclude Include="res\MainController.h" />
+    <ClInclude Include="res\Scene\TestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">
@@ -179,13 +179,17 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\Resources\Character\player\player1.png" />
+    <Image Include="..\Resources\Character\player\player2.png" />
+    <Image Include="..\Resources\Character\player\player3.png" />
+    <Image Include="..\Resources\Character\player\player4.png" />
     <Image Include="..\Resources\Map\testPlatform.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\Map\testPlatform.tmx" />
+    <Text Include="..\Resources\Docs\Tree.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\Resources\Docs\Tree.txt" />
+    <None Include="..\Resources\Map\testPlatform.tmx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

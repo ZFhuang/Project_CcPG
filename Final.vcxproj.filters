@@ -22,54 +22,60 @@
     <Filter Include="resource\Docs">
       <UniqueIdentifier>{fb0bc10a-cb33-4383-8e6c-677078693060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource\Character">
+      <UniqueIdentifier>{92d9e3a9-ad33-4e83-b19d-607f09b92ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource\Character\Player">
+      <UniqueIdentifier>{4c05fcee-fd80-4e0a-a9a5-d5fe920a5775}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\AppDelegate.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="res\Character\Character.cpp">
+      <Filter>src\Character</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameManager.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="res\Character\Player.cpp">
+      <Filter>src\Character</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Scene\TestScene.cpp">
+    <ClCompile Include="res\Scene\TestScene.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Character\Player.cpp">
-      <Filter>src\Character</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\MainController.cpp">
+    <ClCompile Include="res\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Character\Character.cpp">
-      <Filter>src\Character</Filter>
+    <ClCompile Include="res\GameManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="res\MainController.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\AppDelegate.h">
-      <Filter>src</Filter>
+    <ClInclude Include="res\Character\Character.h">
+      <Filter>src\Character</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Scene\TestScene.h">
+    <ClInclude Include="res\Character\Player.h">
+      <Filter>src\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Scene\TestScene.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Character\Player.h">
-      <Filter>src\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\MainConfig.h">
+    <ClInclude Include="res\AppDelegate.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameManager.h">
+    <ClInclude Include="res\GameManager.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\MainController.h">
+    <ClInclude Include="res\MainConfig.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Character\Character.h">
-      <Filter>src\Character</Filter>
+    <ClInclude Include="res\MainController.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -81,15 +87,27 @@
     <Image Include="..\Resources\Map\testPlatform.png">
       <Filter>resource\Map</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Resources\Map\testPlatform.tmx">
-      <Filter>resource\Map</Filter>
-    </None>
+    <Image Include="..\Resources\Character\player\player1.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\player2.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\player3.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\player4.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Resources\Docs\Tree.txt">
       <Filter>resource\Docs</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\Map\testPlatform.tmx">
+      <Filter>resource\Map</Filter>
+    </None>
   </ItemGroup>
 </Project>

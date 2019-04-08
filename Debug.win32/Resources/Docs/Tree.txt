@@ -1,0 +1,8 @@
+各个类的继承关系
+	----MainController 用于角色与玩家控制器交互
+	----GameManager 用于游戏的一些附加组件的管理
+	----AppDelegate 用于游戏程序的一些设置
+	----MainConfig 游戏的一些总体设置
+	----Character 角色类
+						----Player 操纵的游戏人物
+	----TestScene 测试用的游戏地图
