@@ -26,9 +26,9 @@ public:
 	virtual bool init();
 	static GameManager* getInstance();
 	// 获取精灵相对于地图的坐标
-	Vec2 getMapPosition(TMXTiledMap* map, Node* node);
+	static Vec2 getMapPosition(TMXTiledMap* map, Node* node);
 	// 获取精灵指定位置的图块编号
-	int getTileID(TMXTiledMap* map, Node* node);
+	static int getTileID(TMXTiledMap* map, Node* node);
 
 private:
 	static GameManager* m_gameManager;

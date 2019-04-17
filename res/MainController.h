@@ -5,13 +5,15 @@
 #include "Character\Player.h"
 USING_NS_CC;
 
+static const string PLATFORM = "Platform";
+
 class MainController
 {
 public:
 	MainController();
 	virtual ~MainController();
 	// 工厂函数，需要所控制的物体及所控制的层传入
-	static MainController* getInstance(Player* in,cocos2d::Layer* layer);
+	static MainController* getInstance(Player* in,cocos2d::Layer* layer,int maptag);
 
 	// 加载按键监听
 	void addKeyListener();
@@ -23,12 +25,18 @@ public:
 	void keyRelease(EventKeyboard::KeyCode code);
 	// 按键map
 	std::map<EventKeyboard::KeyCode, bool> keymap;
+	// 碰撞
+	Vec2 collideMap(Vec2 speed);
 
 private:
 	// 所控制的物体指针
 	Player* player;
 	// 所控制的层指针
 	cocos2d::Layer* layer;
+	// 碰撞要用到的tiledmap
+	TMXTiledMap* map;
 	// 本身指针
 	static MainController* controller;
+	//用来实现左右移动按键互相覆盖的变量
+	int clickDir = 0;
 };

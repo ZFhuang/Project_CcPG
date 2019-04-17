@@ -6,11 +6,11 @@
 
 using namespace std;
 
-#define PLAYER_TAG 110
-#define PLAYER_WIDTH 100
-#define PLAYER_HEIGHT 100
-#define PLAYER_SPEEDX 3
-#define PLAYER_SPEEDY 3
+static const int PLAYER_TAG = 110;
+static const int  PLAYER_WIDTH = 100;
+static const int  PLAYER_HEIGHT = 100;
+static const int  PLAYER_SPEEDX = 3;
+static const int  PLAYER_SPEEDY = 3;
 
 // 序列帧动画路径数组
 static string PLAYER_IMG_PATH[4] = {
@@ -45,7 +45,7 @@ public:
 	// 设置当前面向的方向
 	void setDir(Dir dir);
 	// 返回此精灵
-	Sprite* getPlayer();
+	Sprite* getSpite();
 	// 奔跑速度
 	Vec2 runSpeed = Vec2(PLAYER_SPEEDX, PLAYER_SPEEDY);
 
@@ -54,7 +54,7 @@ private:
 	int life;
 	int energy;
 	bool isGround = false;;
-	Dir dir=Dir::RIGHT;
+	Dir dir = Dir::RIGHT;
 	Animate* animate = nullptr;
 	Sprite* center = nullptr;
 };

@@ -33,9 +33,6 @@
     <ClCompile Include="main.cpp">
       <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="res\Character\Character.cpp">
-      <Filter>src\Character</Filter>
-    </ClCompile>
     <ClCompile Include="res\Character\Player.cpp">
       <Filter>src\Character</Filter>
     </ClCompile>
@@ -55,9 +52,6 @@
   <ItemGroup>
     <ClInclude Include="main.h">
       <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="res\Character\Character.h">
-      <Filter>src\Character</Filter>
     </ClInclude>
     <ClInclude Include="res\Character\Player.h">
       <Filter>src\Character</Filter>

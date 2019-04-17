@@ -13,9 +13,13 @@ void Player::init(Vec2 pos)
 	if (center == nullptr) {
 		// 添加玩家
 		center = Sprite::create();
+		// 添加包围盒
+		//center->setPhysicsBody(PhysicsBody::createBox(center->getContentSize()));
+		// 设置tag
 		center->setTag(PLAYER_TAG);
 		// 注意要调好锚点方便接下来的旋转等操作
 		center->setAnchorPoint(Vec2(0.2, 0.5));
+		// 初始位置
 		center->setPosition(pos);
 	}
 	setAnimation(AniState::IDLE);
@@ -123,7 +127,7 @@ void Player::setDir(Dir dir)
 	}
 }
 
-Sprite* Player::getPlayer()
+Sprite* Player::getSpite()
 {
 	return center;
 }

@@ -10,7 +10,7 @@
 USING_NS_CC;
 
 //地图tag,通过tag来区分读入的不同地图
-#define MAP_TAG 111
+static const int MAP_TAG = 111;
 //地图的xml文件位置
 #define MAP_TMX_FILE_PATH "Map/testPlatform.tmx"
 

@@ -9,6 +9,12 @@ cocos2d::Scene* TestScene::createScene()
 	// 'layer' is an autorelease object
 	auto layer = TestScene::create();
 
+	//// 获得场景的PhysicsWorld添加到layer
+	//layer->pw= scene->getPhysicsWorld();
+
+	// 开启所有shape的debug绘制
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+
 	// add layer as a child to scene
 	scene->addChild(layer);
 
@@ -38,7 +44,7 @@ void TestScene::loadCharacter()
 	// 添加玩家
 	player = new Player();
 	player->init(Vec2(250, 250));
-	this->addChild(player->getPlayer(), 10);
+	this->addChild(player->getSpite(), 10);
 }
 
 bool TestScene::init()
@@ -61,7 +67,9 @@ bool TestScene::init()
 	loadCharacter();
 
 	// 加载控制器
-	controller = MainController::getInstance(player,this);
+	controller = MainController::getInstance(player, this, MAP_TAG);
+
+	//pw->setGravity(Vec2(0.0f, 1.0f));
 
 	// 设置游戏逻辑回调
 	this->scheduleUpdate();
