@@ -5,7 +5,8 @@
 #include "Character\Player.h"
 USING_NS_CC;
 
-static const string PLATFORM = "Platform";
+static const string PLATFORM_LAYER = "Platform";
+static const float RUNACCE = 2;
 
 class MainController
 {
@@ -14,9 +15,14 @@ public:
 	virtual ~MainController();
 	// 工厂函数，需要所控制的物体及所控制的层传入
 	static MainController* getInstance(Player* in,cocos2d::Layer* layer,int maptag);
-
-	// 加载按键监听
+	// 初始化
+	void init();
+	// 控制器内部的回调
+	void update();
+	// 按键监听
 	void addKeyListener();
+	// 碰撞监听
+	void addCollideListener();
 	// 按键触发响应
 	void keyClick(EventKeyboard::KeyCode code);
 	// 按键按住响应,放在循环中每隔一段时间检测一次比较好
@@ -25,8 +31,8 @@ public:
 	void keyRelease(EventKeyboard::KeyCode code);
 	// 按键map
 	std::map<EventKeyboard::KeyCode, bool> keymap;
-	// 碰撞
-	Vec2 collideMap(Vec2 speed);
+	// 处理碰撞
+	bool onContactBegin(const PhysicsContact &contact);
 
 private:
 	// 所控制的物体指针
@@ -39,4 +45,6 @@ private:
 	static MainController* controller;
 	//用来实现左右移动按键互相覆盖的变量
 	int clickDir = 0;
+	// 左右移动的加速度
+	int acceSpeed = RUNACCE;
 };

@@ -28,6 +28,21 @@ MainController* MainController::getInstance(Player* in, cocos2d::Layer* layer, i
 	return NULL;
 }
 
+void MainController::init()
+{
+	addKeyListener();
+}
+
+void MainController::update()
+{
+	//按键按下
+	keyPress();
+	//没有左右移动时
+	if (clickDir == 0) {
+		player->moveX(0);
+	}
+}
+
 void MainController::addKeyListener()
 {
 	// 按键监听
@@ -51,6 +66,16 @@ void MainController::addKeyListener()
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
 }
 
+void MainController::addCollideListener()
+{
+	//添加碰撞检测
+	auto contactListener = EventListenerPhysicsContact::create();//创建碰撞监听
+	contactListener->onContactBegin = CC_CALLBACK_1(onContactBegin, this);//回调函数
+
+	auto dispatcher = Director::getInstance()->getEventDispatcher();
+	dispatcher->addEventListenerWithSceneGraphPriority(contactListener, layer); //加入事件监听
+}
+
 void MainController::keyClick(EventKeyboard::KeyCode code)
 {
 	//CCLOG("%d",code);
@@ -72,12 +97,12 @@ void MainController::keyPress()
 	if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDir >= 0) {
 		player->setAnimation(AniState::RUN);
 		player->setDir(Dir::RIGHT);
-		player->move(Vec2(player->runSpeed.x, 0));
+		player->moveX(acceSpeed);
 	}
 	else if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDir <= 0) {
 		player->setAnimation(AniState::RUN);
 		player->setDir(Dir::LEFT);
-		player->move(Vec2(-player->runSpeed.x, 0));
+		player->moveX(-acceSpeed);
 	}
 }
 
@@ -103,31 +128,9 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	}
 }
 
-Vec2 MainController::collideMap(Vec2 speed)
+bool MainController::onContactBegin(const PhysicsContact & contact)
 {
-	double newX, newY;
-	auto spite = player->getSpite();
-
-	// 玩家相对于屏幕的坐标
-	float player_screen_x = spite->getPositionX();
-	float player_screen_y = spite->getPositionY() - spite->getContentSize().height / 2;
-
-	// 地图相对于屏幕的x坐标
-	float map_screen_x = abs(map->getPositionX());
-	float map_screen_y = 0;
-
-	// 玩家相对于地图的坐标
-	float player_map_x = player_screen_x + map_screen_x;
-	float player_map_y = player_screen_y + map_screen_y;
-
-	//int playerTiledID = map->getLayer(PLATFORM)->getTileGIDAt(Vec2((int)(player_map_x / map->getTileSize().width), (int)(map->getMapSize().height - 1 - player_map_y / map->getTileSize().height)));
-	////增加148，132两块，需要加一
-	//if ((m_isJump == false) && (m_jumpDir == Dir::STOP) && (playerTiledID != 8) && (playerTiledID != 7)
-	//	&& (playerTiledID != 151) && (playerTiledID != 170) && (playerTiledID != 171) && (playerTiledID != 172) && (playerTiledID != 149) && (playerTiledID != 133)) {
-	//	m_isJump = true;
-	//	m_jumpDir = Dir::DOWN;
-	//	m_jumpSpeed = PLAYER_DOWN_SPEED;
-	//}
-
-	return Vec2(newX, newY);
+	//传入物理碰撞对象
+	log("contact");
+	return true;
 }

@@ -12,8 +12,7 @@ USING_NS_CC;
 //地图tag,通过tag来区分读入的不同地图
 static const int MAP_TAG = 111;
 //地图的xml文件位置
-#define MAP_TMX_FILE_PATH "Map/testPlatform.tmx"
-
+static const string MAP_TMX_FILE_PATH = "Map/testPlatform.tmx";
 
 class TestScene : public cocos2d::Layer
 {
@@ -34,6 +33,8 @@ private:
 	MainController* controller;
 	// 玩家对象
 	Player* player;
+	// 物理世界指针
+	PhysicsWorld* pw;
 
 	// 加载地图
 	void loadMap(std::string mapPath);

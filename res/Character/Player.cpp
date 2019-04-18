@@ -12,15 +12,27 @@ void Player::init(Vec2 pos)
 {
 	if (center == nullptr) {
 		// 添加玩家
-		center = Sprite::create();
-		// 添加包围盒
-		//center->setPhysicsBody(PhysicsBody::createBox(center->getContentSize()));
+		center = Sprite::create(PLAYER_IMG_PATH[0]);
+		// 强制设置大小
+		//center->setContentSize(Size(PLAYER_WIDTH, PLAYER_HEIGHT));
 		// 设置tag
 		center->setTag(PLAYER_TAG);
+
 		// 注意要调好锚点方便接下来的旋转等操作
-		center->setAnchorPoint(Vec2(0.2, 0.5));
+		//center->setAnchorPoint(Vec2(0.5, 0.5));
+		// 刷新大小
+		//PLAYER_WIDTH = center->getContentSize().width;
+		//PLAYER_HEIGHT = center->getContentSize().height;
+
+		// 添加物理碰撞盒
+		auto size = center->getContentSize();
+		auto body = PhysicsBody::createBox(center->getContentSize());
+		
+		center->setPhysicsBody(body);
 		// 初始位置
 		center->setPosition(pos);
+
+		initTrigger();
 	}
 	setAnimation(AniState::IDLE);
 }
@@ -77,9 +89,29 @@ void Player::setAnimation(AniState state)
 	}
 }
 
-void Player::move(Vec2 speed)
+void Player::moveX(double speed)
 {
-	center->setPosition(center->getPosition() + speed);
+	if (speed > 0) {
+		if (Speed.x + speed < MAX_PLAYER_SPEED_X) {
+			Speed.x += speed;
+		}
+		else {
+			Speed.x = MAX_PLAYER_SPEED_X;
+		}
+	}
+	else if (speed < 0) {
+		if (Speed.x + speed > -MAX_PLAYER_SPEED_X) {
+			Speed.x += speed;
+		}
+		else {
+			Speed.x = -MAX_PLAYER_SPEED_X;
+		}
+	}
+	else {
+		Speed.x = 0;
+	}
+	refreshTrigger();
+	center->setPositionX(center->getPositionX() + Speed.x);
 }
 
 bool Player::moveTo(Vec2 pos, Vec2 speed)
@@ -118,16 +150,48 @@ void Player::setDir(Dir dir)
 		return;
 	}
 	this->dir = dir;
+
+	// 加了物理后翻转出现bug
 	// 翻转不要用flip，因为flip的翻转是无关锚点的
-	if (this->dir == Dir::LEFT) {
-		center->setRotationY(180);
-	}
-	else {
-		center->setRotationY(0);
-	}
+	//if (this->dir == Dir::LEFT) {
+	//	center->setRotationY(180);
+	//}
+	//else {
+	//	center->setRotationY(0);
+	//}
 }
 
 Sprite* Player::getSpite()
 {
 	return center;
+}
+
+void Player::refreshTrigger()
+{
+	//CCLOG("%f", Speed.x);
+	triggerX->setPositionOffset(Vec2(Speed.x, 0));
+	triggerY->setPositionOffset(Vec2(0, Speed.y));
+}
+
+void Player::initTrigger()
+{
+	auto size = center->getContentSize();
+
+	//增加triggerX
+	Node *tx = new Node();
+	tx->setPosition(size.width / 2, size.height / 2);
+	center->addChild(tx);
+	triggerX = PhysicsBody::createEdgeBox(size);
+	// CollisionBitmask与后结果为0表示关闭碰撞
+	triggerX->setCollisionBitmask(0);
+	tx->setPhysicsBody(triggerX);
+
+	//增加triggerY
+	Node *ty = new Node();
+	ty->setPosition(size.width / 2, size.height / 2);
+	center->addChild(ty);
+	triggerY = PhysicsBody::createEdgeBox(size);
+	// CollisionBitmask与后结果为0表示关闭碰撞
+	triggerY->setCollisionBitmask(0);
+	ty->setPhysicsBody(triggerY);
 }
