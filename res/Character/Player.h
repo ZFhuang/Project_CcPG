@@ -43,6 +43,8 @@ public:
 	void moveX(double speed);
 	// 以速度向目的地移动
 	bool moveTo(Vec2 pos, Vec2 speed);
+
+	void move(Vec2 pos);
 	// 设置当前面向的方向
 	void setDir(Dir dir);
 	// 返回此精灵
@@ -54,7 +56,7 @@ private:
 	int life;
 	int energy;
 	bool isGround = false;;
-	Dir dir = Dir::RIGHT;
+	Dir dir = Dir::STOP;
 	Animate* animate = nullptr;
 	Sprite* center = nullptr;
 	PhysicsBody *triggerX;
@@ -65,9 +67,16 @@ private:
 	bool downCol = false;
 	// 当前速度
 	Vec2 Speed = Vec2(0, 0);
-
+	// 处理X碰撞
+	bool onXCollisionBegin(const PhysicsContact &contact);
+	bool onXCollisionSeperate(const PhysicsContact &contact);
+	// 处理Y碰撞
+	bool onYCollisionBegin(const PhysicsContact &contact);
+	bool onYCollisionSeperate(const PhysicsContact &contact);
 	// 刷新移动碰撞体
 	void refreshTrigger();
 	// 初始化碰撞触发器
 	void initTrigger();
+	// 碰撞监听
+	void addCollideListener();
 };

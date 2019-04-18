@@ -93,6 +93,18 @@
     <Image Include="..\Resources\Character\player\player4.png">
       <Filter>resource\Character\Player</Filter>
     </Image>
+    <Image Include="..\Resources\Character\player\run1.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\run2.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\run3.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
+    <Image Include="..\Resources\Character\player\run4.png">
+      <Filter>resource\Character\Player</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\Resources\Docs\Tree.txt">

@@ -21,8 +21,7 @@ public:
 	void update();
 	// 按键监听
 	void addKeyListener();
-	// 碰撞监听
-	void addCollideListener();
+
 	// 按键触发响应
 	void keyClick(EventKeyboard::KeyCode code);
 	// 按键按住响应,放在循环中每隔一段时间检测一次比较好
@@ -31,8 +30,6 @@ public:
 	void keyRelease(EventKeyboard::KeyCode code);
 	// 按键map
 	std::map<EventKeyboard::KeyCode, bool> keymap;
-	// 处理碰撞
-	bool onContactBegin(const PhysicsContact &contact);
 
 private:
 	// 所控制的物体指针

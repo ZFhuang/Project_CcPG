@@ -27,12 +27,11 @@ void Player::init(Vec2 pos)
 		// 添加物理碰撞盒
 		auto size = center->getContentSize();
 		auto body = PhysicsBody::createBox(center->getContentSize());
-		
 		center->setPhysicsBody(body);
 		// 初始位置
 		center->setPosition(pos);
 
-		initTrigger();
+		//initTrigger();
 	}
 	setAnimation(AniState::IDLE);
 }
@@ -110,8 +109,14 @@ void Player::moveX(double speed)
 	else {
 		Speed.x = 0;
 	}
-	refreshTrigger();
-	center->setPositionX(center->getPositionX() + Speed.x);
+	//refreshTrigger();
+
+	if (!leftCol&&Speed.x < 0) {
+		center->setPositionX(center->getPositionX() + Speed.x);
+	}
+	else if (!rightCol&&Speed.x > 0) {
+		center->setPositionX(center->getPositionX() + Speed.x);
+	}
 }
 
 bool Player::moveTo(Vec2 pos, Vec2 speed)
@@ -144,6 +149,11 @@ bool Player::moveTo(Vec2 pos, Vec2 speed)
 	return false;
 }
 
+void Player::move(Vec2 pos)
+{
+	center->setPosition(pos);
+}
+
 void Player::setDir(Dir dir)
 {
 	if (this->dir == dir) {
@@ -166,6 +176,53 @@ Sprite* Player::getSpite()
 	return center;
 }
 
+bool Player::onXCollisionBegin(const PhysicsContact & contact)
+{
+	auto a = contact.getShapeA()->getBody()->getTag();
+	auto b = contact.getShapeB()->getBody()->getTag();
+	if ((a == 3&&b==1) || (a==1&&b == 3)) {
+		if (dir == Dir::RIGHT) {
+			rightCol = true;
+			return true;
+		}
+		else if (dir == Dir::LEFT) {
+			leftCol = true;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Player::onXCollisionSeperate(const PhysicsContact & contact)
+{
+	auto a = contact.getShapeA()->getBody()->getTag();
+	auto b = contact.getShapeB()->getBody()->getTag();
+	if ((a == 3 && b == 1) || (a == 1 && b == 3)) {
+		if (rightCol) {
+			rightCol = false;
+			return true;
+		}
+		else if (leftCol) {
+			leftCol = false;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Player::onYCollisionBegin(const PhysicsContact & contact)
+{
+	auto a= contact.getShapeA()->getBody()->getTag();
+	auto b = contact.getShapeB()->getBody()->getTag();
+	CCLOG("%d %d", a, b);
+	return true;
+}
+
+bool Player::onYCollisionSeperate(const PhysicsContact & contact)
+{
+	return true;
+}
+
 void Player::refreshTrigger()
 {
 	//CCLOG("%f", Speed.x);
@@ -175,6 +232,9 @@ void Player::refreshTrigger()
 
 void Player::initTrigger()
 {
+	//一个body的CategoryBitmask和另一个body的ContactTestBitmask的逻辑与的结果不等于0时，接触事件将被发出，否则不发送。 
+	//一个body的CategoryBitmask和另一个body的CollisionBitmask的逻辑与结果不等于0时，他们将碰撞，否则不碰撞
+
 	auto size = center->getContentSize();
 
 	//增加triggerX
@@ -182,8 +242,10 @@ void Player::initTrigger()
 	tx->setPosition(size.width / 2, size.height / 2);
 	center->addChild(tx);
 	triggerX = PhysicsBody::createEdgeBox(size);
-	// CollisionBitmask与后结果为0表示关闭碰撞
+	triggerX->setCategoryBitmask(0x00000001);
+	triggerX->setContactTestBitmask(0x00000010);
 	triggerX->setCollisionBitmask(0);
+	triggerX->setTag(1);
 	tx->setPhysicsBody(triggerX);
 
 	//增加triggerY
@@ -191,7 +253,27 @@ void Player::initTrigger()
 	ty->setPosition(size.width / 2, size.height / 2);
 	center->addChild(ty);
 	triggerY = PhysicsBody::createEdgeBox(size);
-	// CollisionBitmask与后结果为0表示关闭碰撞
+	triggerY->setCategoryBitmask(0x00000002);
+	triggerY->setContactTestBitmask(0x00000020);
 	triggerY->setCollisionBitmask(0);
+	triggerY->setTag(2);
 	ty->setPhysicsBody(triggerY);
+
+	addCollideListener();
+}
+
+void Player::addCollideListener()
+{
+	//添加碰撞检测
+	auto listenerX = EventListenerPhysicsContact::create();//创建碰撞监听
+	listenerX->onContactBegin = CC_CALLBACK_1(Player::onXCollisionBegin, this);//回调函数
+	listenerX->onContactSeparate = CC_CALLBACK_1(Player::onXCollisionSeperate, this);//回调函数
+
+	auto listenerY = EventListenerPhysicsContact::create();//创建碰撞监听
+	listenerY->onContactBegin = CC_CALLBACK_1(Player::onYCollisionBegin, this);//回调函数
+	listenerY->onContactSeparate = CC_CALLBACK_1(Player::onYCollisionSeperate, this);//回调函数
+
+	auto dispatcher = Director::getInstance()->getEventDispatcher();
+	dispatcher->addEventListenerWithSceneGraphPriority(listenerX, triggerX->getNode()); //加入事件监听
+	dispatcher->addEventListenerWithSceneGraphPriority(listenerY, triggerY->getNode()); //加入事件监听
 }

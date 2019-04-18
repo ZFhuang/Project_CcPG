@@ -49,7 +49,9 @@ void TestScene::loadMap(std::string mapPath)
 					continue;
 				PhysicsBody* body = PhysicsBody::createEdgeBox(sprite->getContentSize());//给精灵设置一个刚体
 				//body->setDynamic(false);
-				body->setContactTestBitmask(0xFFFFFFFF);//设置接触掩码值
+				body->setTag(3);
+				//body->setCategoryBitmask(0x00000030);
+				//body->setContactTestBitmask(0x00000003);
 				body->setGravityEnable(false);
 				sprite->setPhysicsBody(body);
 			}

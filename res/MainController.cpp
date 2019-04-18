@@ -40,6 +40,7 @@ void MainController::update()
 	//没有左右移动时
 	if (clickDir == 0) {
 		player->moveX(0);
+		player->setDir(Dir::STOP);
 	}
 }
 
@@ -66,15 +67,7 @@ void MainController::addKeyListener()
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, layer);
 }
 
-void MainController::addCollideListener()
-{
-	//添加碰撞检测
-	auto contactListener = EventListenerPhysicsContact::create();//创建碰撞监听
-	contactListener->onContactBegin = CC_CALLBACK_1(onContactBegin, this);//回调函数
 
-	auto dispatcher = Director::getInstance()->getEventDispatcher();
-	dispatcher->addEventListenerWithSceneGraphPriority(contactListener, layer); //加入事件监听
-}
 
 void MainController::keyClick(EventKeyboard::KeyCode code)
 {
@@ -97,7 +90,31 @@ void MainController::keyPress()
 	if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDir >= 0) {
 		player->setAnimation(AniState::RUN);
 		player->setDir(Dir::RIGHT);
-		player->moveX(acceSpeed);
+		auto center = player->getSpite();
+
+		TMXLayer* platforms = map->getLayer(PLATFORM_LAYER);
+		double newX= center->getPositionX() + 10, newY= center->getPositionX();
+		Rect newPos(Vec2(newX, newY), center->getContentSize());
+		int w = map->getMapSize().width;
+		int h = map->getMapSize().height;
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				Sprite* sprite = platforms->getTileAt(Vec2(x, y));//从tile的坐标取出对应的精灵
+				if (!sprite)//防止sprite为NULL
+					continue;
+				Rect box = sprite->getBoundingBox();
+				if (newPos.intersectsRect(box)) {
+					CCLOG("%d %d", x, y);
+					newX = box.getMidX() - 5;
+					newY = center->getPositionY();
+					break;
+				}
+			}
+		}
+
+		player->move(Vec2(newX, newY));
+
+		//player->moveX(acceSpeed);
 	}
 	else if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDir <= 0) {
 		player->setAnimation(AniState::RUN);
@@ -126,11 +143,4 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	default:
 		break;
 	}
-}
-
-bool MainController::onContactBegin(const PhysicsContact & contact)
-{
-	//传入物理碰撞对象
-	log("contact");
-	return true;
 }
