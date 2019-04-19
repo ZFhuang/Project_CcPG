@@ -6,7 +6,21 @@
 USING_NS_CC;
 
 static const string PLATFORM_LAYER = "Platform";
-static const float RUNACCE = 2;
+// 左右移动的加速度
+static const float RUNACCE = 4;
+// 跳跃总时间ms
+static const clock_t JUMPTIME = 400;
+// 下落容错时间ms
+static const clock_t FAULT_FALLTIME = 40;
+// 提早跳跃容错时间ms
+static const clock_t FAULT_JUMPTIME = 40;
+// 跳跃的上升段所占的比例
+static const float UPRATE = 0.7;
+struct PlayerCol {
+	Vec2 newPos;
+	int xCol = 0;
+	int yCol = 0;
+};
 
 class MainController
 {
@@ -21,7 +35,6 @@ public:
 	void update();
 	// 按键监听
 	void addKeyListener();
-
 	// 按键触发响应
 	void keyClick(EventKeyboard::KeyCode code);
 	// 按键按住响应,放在循环中每隔一段时间检测一次比较好
@@ -42,6 +55,16 @@ private:
 	static MainController* controller;
 	//用来实现左右移动按键互相覆盖的变量
 	int clickDir = 0;
-	// 左右移动的加速度
-	int acceSpeed = RUNACCE;
+	// 返回按照速度可以移动到的位置
+	PlayerCol getNewPos(Vec2 speed);
+	// 是否在地面
+	bool isGround = false;
+	// 锁住按住，用来做一些固定移动操作
+	bool lockPress = false;
+	// 计算按下跳跃多久的计时
+	clock_t jumpStart = 0;
+	// 计算离开地面多久的计时，用来做跳跃容错
+	clock_t fallStart = 0;
+	// 提早跳跃计时器
+	clock_t prejumpStart = 0;
 };

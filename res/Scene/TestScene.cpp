@@ -38,16 +38,16 @@ void TestScene::loadMap(std::string mapPath)
 		map->setPhysicsBody(PhysicsBody::createEdgeBox(visibleSize, PHYSICSBODY_MATERIAL_DEFAULT, 3));
 		map->setPosition(Vec2(0, 0));
 
-		//给砖块加上物理
+		// 给砖块加上物理
 		TMXLayer* platforms = map->getLayer(PLATFORM_LAYER);
 		int w = map->getMapSize().width;
 		int h = map->getMapSize().height;
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
-				Sprite* sprite = platforms->getTileAt(Vec2(x, y));//从tile的坐标取出对应的精灵
-				if (!sprite)//防止sprite为NULL
+				Sprite* sprite = platforms->getTileAt(Vec2(x, y));	// 从tile的坐标取出对应的精灵
+				if (!sprite)	// 防止sprite为NULL
 					continue;
-				PhysicsBody* body = PhysicsBody::createEdgeBox(sprite->getContentSize());//给精灵设置一个刚体
+				PhysicsBody* body = PhysicsBody::createEdgeBox(sprite->getContentSize());	// 给精灵设置一个刚体
 				//body->setDynamic(false);
 				body->setTag(3);
 				//body->setCategoryBitmask(0x00000030);
@@ -68,7 +68,7 @@ void TestScene::loadCharacter()
 {
 	// 添加玩家
 	player = new Player();
-	player->init(Vec2(150, 250));
+	player->init(Vec2(250, 250));
 	this->addChild(player->getSpite(), 10);
 }
 

@@ -7,11 +7,15 @@
 using namespace std;
 
 static const int PLAYER_TAG = 110;
-static int  PLAYER_WIDTH = 35;
-static int  PLAYER_HEIGHT = 60;
-static const int  MAX_PLAYER_SPEED_X = 10;
-static const int  MAX_PLAYER_SPEED_JUMP = 20;
-static const int  MAX_PLAYER_SPEED_FALL = 30;
+static int  PLAYER_WIDTH = 40;
+static int  PLAYER_HEIGHT = 50;
+static const float JUMP_ACCE = 1.2;
+static const float FALL_ACCE = 1.2;
+static const float  MAX_PLAYER_SPEED_X = 10;
+static const float  MAX_SPEED_JUMP = 7;
+static const float  MAX_SPEED_FALL = 7;
+// 停止的惯性
+static const float  SLOW_DOWN_X = 5;
 
 // 序列帧动画路径数组
 static string PLAYER_IMG_PATH[4] = {
@@ -39,17 +43,20 @@ public:
 	void init(Vec2 pos);
 	// 设置将要播放的动画状态
 	void setAnimation(AniState state);
-	// 按照速度方向移动
-	void moveX(double speed);
 	// 以速度向目的地移动
 	bool moveTo(Vec2 pos, Vec2 speed);
-
+	// 移动
 	void move(Vec2 pos);
 	// 设置当前面向的方向
 	void setDir(Dir dir);
 	// 返回此精灵
 	Sprite* getSpite();
-	
+	// 设置加速度
+	void setAcceX(float x);
+	// 设置空中速度控制
+	void air(int step);
+	// 返回速度
+	Vec2 getSpeed();
 
 private:
 	AniState nowAni = AniState::FALL;
@@ -61,22 +68,7 @@ private:
 	Sprite* center = nullptr;
 	PhysicsBody *triggerX;
 	PhysicsBody *triggerY;
-	bool leftCol = false;
-	bool rightCol = false;
-	bool upCol = false;
-	bool downCol = false;
+
 	// 当前速度
 	Vec2 Speed = Vec2(0, 0);
-	// 处理X碰撞
-	bool onXCollisionBegin(const PhysicsContact &contact);
-	bool onXCollisionSeperate(const PhysicsContact &contact);
-	// 处理Y碰撞
-	bool onYCollisionBegin(const PhysicsContact &contact);
-	bool onYCollisionSeperate(const PhysicsContact &contact);
-	// 刷新移动碰撞体
-	void refreshTrigger();
-	// 初始化碰撞触发器
-	void initTrigger();
-	// 碰撞监听
-	void addCollideListener();
 };
