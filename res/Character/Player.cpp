@@ -122,30 +122,31 @@ void Player::move(Vec2 pos)
 	center->setPosition(pos);
 }
 
-void Player::setDir(Dir dir)
-{
-	if (this->dir == dir) {
-		return;
-	}
-	this->dir = dir;
-
-	// 加了物理后翻转出现bug
-	// 翻转不要用flip，因为flip的翻转是无关锚点的
-	//if (this->dir == Dir::LEFT) {
-	//	center->setRotationY(180);
-	//}
-	//else {
-	//	center->setRotationY(0);
-	//}
-}
+//void Player::setDir(Dir dir)
+//{
+//	if (this->dir == dir) {
+//		return;
+//	}
+//	this->dir = dir;
+//
+//	// 加了物理后翻转出现bug
+//	// 翻转不要用flip，因为flip的翻转是无关锚点的
+//	//if (this->dir == Dir::LEFT) {
+//	//	center->setRotationY(180);
+//	//}
+//	//else {
+//	//	center->setRotationY(0);
+//	//}
+//}
 
 Sprite* Player::getSpite()
 {
 	return center;
 }
 
-void Player::setAcceX(float x)
+void Player::setAcceX(float x,bool isGround)
 {
+	//X轴移动
 	if (x > 0) {
 		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
 			Speed.x += x;
@@ -163,20 +164,40 @@ void Player::setAcceX(float x)
 		}
 	}
 	else {
+		//惯性设置，分两个状态
 		if (Speed.x > 0) {
-			Speed.x -= SLOW_DOWN_X;
-			if (Speed.x < SLOW_DOWN_X) {
-				Speed.x = 0;
+			if (isGround) {
+				//地面
+				if (Speed.x < SLOW_DOWN_X) {
+					Speed.x = 0;
+				}
+				Speed.x -= SLOW_DOWN_X;
+			}
+			else {
+				//空中惯性更大点
+				if (Speed.x < SLOW_DOWN_AIR) {
+					Speed.x = 0;
+				}
+				Speed.x -= SLOW_DOWN_AIR;
 			}
 		}
 		else if (Speed.x < 0) {
-			Speed.x += SLOW_DOWN_X;
-			if (Speed.x > -SLOW_DOWN_X) {
-				Speed.x = 0;
+			//对称
+			if (isGround) {
+				if (Speed.x > -SLOW_DOWN_X) {
+					Speed.x = 0;
+				}
+				Speed.x += SLOW_DOWN_X;
+			}
+			else {
+				if (Speed.x >- SLOW_DOWN_AIR) {
+					Speed.x = 0;
+				}
+				Speed.x += SLOW_DOWN_AIR;
 			}
 		}
-		else
-			dir = Dir::STOP;
+		//else
+			//dir = Dir::STOP;
 	}
 }
 
@@ -195,12 +216,16 @@ void Player::air(int step)
 		break;
 	case 3:
 		// 三阶段，减速上升并滑一段
-		if (Speed.y > 0) {
-			Speed.y -=3; 
+		if (Speed.y > -4) {
+			Speed.y -=0.5; 
 		}
-		else {
+		else if (Speed.y < -4) {
 			Speed.y = 0;
 		}
+		break;
+	case 4:
+		// 抓墙一阶段，不会下降
+		Speed.y = 0;
 		break;
 	case 5:
 		// 五阶段，下落
@@ -209,6 +234,15 @@ void Player::air(int step)
 		}
 		else {
 			Speed.y =- MAX_SPEED_FALL;
+		}
+		break;
+	case 6:
+		// 滑墙或抓墙二阶段，缓慢下降
+		if (Speed.y - SLIP_ACCE > -Max_SPEED_SLIP) {
+			Speed.y -= SLIP_ACCE;
+		}
+		else {
+			Speed.y = -Max_SPEED_SLIP;
 		}
 		break;
 	case 7:

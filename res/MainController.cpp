@@ -41,7 +41,7 @@ void MainController::update()
 	// 按键按下
 	keyPress();
 	auto Condition = getNewPos(player->getSpeed());
-	if (isGround == true && jumpStart == 0&&clock()-prejumpStart<=FAULT_JUMPTIME) {
+	if (isGround == true && jumpStart == 0 && clock() - prejumpStart <= FAULT_JUMPTIME) {
 		isGround = false;
 		jumpStart = clock();
 	}
@@ -61,8 +61,21 @@ void MainController::update()
 	}
 	if (Condition.yCol == 0) {
 		// 离开地面
-		if(fallStart==0)
+		if (fallStart == 0)
 			fallStart = clock();
+	}
+	if (Condition.xCol == 1 || Condition.xCol == -1) {
+		// 墙璧
+		isWall = true;
+		if (isGround == false && isHold == false) {
+			// 没有抓住时，滑墙
+			jumpStart = 0;
+			player->air(6);
+		}
+	}
+	else if (Condition.xCol == 0) {
+		// 离开墙壁
+		isWall = false;
 	}
 	if (fallStart != 0 && clock() - fallStart > FAULT_FALLTIME) {
 		isGround = false;
@@ -110,7 +123,10 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 		break;
 	case  EventKeyboard::KeyCode::KEY_K:
 		prejumpStart = clock();
-
+		break;
+	case EventKeyboard::KeyCode::KEY_J:
+		if (isWall==true&&isGround==false)
+			isHold = true;
 		break;
 	default:
 		break;
@@ -119,39 +135,56 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 
 void MainController::keyPress()
 {
-	//if()
-
 	// 按键按下时的处理
-	if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDir >= 0) {
-		player->setAnimation(AniState::RUN);
-		player->setDir(Dir::RIGHT);
-		player->setAcceX(RUNACCE);
-	}
-	if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDir <= 0) {
-		player->setAnimation(AniState::RUN);
-		player->setDir(Dir::LEFT);
-		player->setAcceX(-RUNACCE);
+	if (isHold == false) {
+		// 当没有抓着墙壁时才允许触发X
+		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDir >= 0) {
+			player->setAnimation(AniState::RUN);
+			// 设置左右方向
+			player->isRight=true;
+			player->setAcceX(RUNACCE, isGround);
+		}
+		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDir <= 0) {
+			player->setAnimation(AniState::RUN);
+			// 设置左右方向
+			player->isRight = false;
+			player->setAcceX(-RUNACCE, isGround);
+		}
 	}
 	if (keymap[EventKeyboard::KeyCode::KEY_K] == true) {
 		if (jumpStart != 0) {
 			if (clock() - jumpStart >= JUMPTIME) {
+				// 超过跳跃时间时
 				jumpStart = 0;
 			}
 			else if (clock() - jumpStart <= JUMPTIME*UPRATE) {
+				// 跳跃的一阶段
 				player->setAnimation(AniState::JUMP);
-				player->setDir(Dir::UP);
+				//player->setDir(Dir::UP);
 				player->air(1);
 			}
 			else {
+				// 跳跃的三阶段
 				player->air(3);
 			}
 		}
+	}
+	if (keymap[EventKeyboard::KeyCode::KEY_J] == true && isWall==true&&isGround == false) {
+		// 按住按键时判断是否抓住墙壁
+		isHold = true;
+		// 停止下落
+		player->air(4);
+		if(player->isRight)
+			player->setAcceX(5, isGround);
+		else
+			player->setAcceX(-5, isGround);
+		// 计算体力消耗
 	}
 
 	if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false) {
 		// 左右键都放开时
 		clickDir = 0;
-		player->setAcceX(0);
+		player->setAcceX(0, isGround);
 	}
 }
 
@@ -176,6 +209,11 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	{
 		player->setAnimation(AniState::FALL);
 		jumpStart = 0;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_J:
+	{
+		isHold = false;
 		break;
 	}
 	default:

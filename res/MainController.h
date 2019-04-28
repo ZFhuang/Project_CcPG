@@ -7,7 +7,7 @@ USING_NS_CC;
 
 static const string PLATFORM_LAYER = "Platform";
 // 左右移动的加速度
-static const float RUNACCE = 4;
+static const float RUNACCE = 2;
 // 跳跃总时间ms
 static const clock_t JUMPTIME = 400;
 // 下落容错时间ms
@@ -15,7 +15,7 @@ static const clock_t FAULT_FALLTIME = 40;
 // 提早跳跃容错时间ms
 static const clock_t FAULT_JUMPTIME = 40;
 // 跳跃的上升段所占的比例
-static const float UPRATE = 0.7;
+static const float UPRATE = 0.8;
 struct PlayerCol {
 	Vec2 newPos;
 	int xCol = 0;
@@ -61,10 +61,16 @@ private:
 	bool isGround = false;
 	// 锁住按住，用来做一些固定移动操作
 	bool lockPress = false;
+	// 是否在墙面
+	bool isWall = false;
+	// 是否抓墙
+	bool isHold = false;
 	// 计算按下跳跃多久的计时
 	clock_t jumpStart = 0;
 	// 计算离开地面多久的计时，用来做跳跃容错
 	clock_t fallStart = 0;
 	// 提早跳跃计时器
 	clock_t prejumpStart = 0;
+	// 反身跳计时器
+	clock_t backjumpStart = 0;
 };

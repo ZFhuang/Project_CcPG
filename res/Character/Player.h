@@ -6,16 +6,20 @@
 
 using namespace std;
 
-static const int PLAYER_TAG = 110;
+static const int	PLAYER_TAG = 110;
 static int  PLAYER_WIDTH = 40;
 static int  PLAYER_HEIGHT = 50;
-static const float JUMP_ACCE = 1.2;
-static const float FALL_ACCE = 1.2;
-static const float  MAX_PLAYER_SPEED_X = 10;
+static const float	JUMP_ACCE = 1.2;
+static const float	FALL_ACCE = 1.2;
+static const float	SLIP_ACCE = 0.5;
+static const float  MAX_PLAYER_SPEED_X = 6;
 static const float  MAX_SPEED_JUMP = 7;
 static const float  MAX_SPEED_FALL = 7;
-// 停止的惯性
+static const float	Max_SPEED_SLIP = 3;
+// 地面停止的惯性
 static const float  SLOW_DOWN_X = 5;
+// 空中停止的惯性
+static const float  SLOW_DOWN_AIR = 0.5;
 
 // 序列帧动画路径数组
 static string PLAYER_IMG_PATH[4] = {
@@ -47,23 +51,21 @@ public:
 	bool moveTo(Vec2 pos, Vec2 speed);
 	// 移动
 	void move(Vec2 pos);
-	// 设置当前面向的方向
-	void setDir(Dir dir);
 	// 返回此精灵
 	Sprite* getSpite();
 	// 设置加速度
-	void setAcceX(float x);
+	void setAcceX(float x, bool isGround);
 	// 设置空中速度控制
 	void air(int step);
 	// 返回速度
 	Vec2 getSpeed();
+	// 当前水平面向的方向
+	bool isRight = false;
 
 private:
 	AniState nowAni = AniState::FALL;
 	int life;
 	int energy;
-	bool isGround = false;;
-	Dir dir = Dir::STOP;
 	Animate* animate = nullptr;
 	Sprite* center = nullptr;
 	PhysicsBody *triggerX;
