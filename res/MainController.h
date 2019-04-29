@@ -8,6 +8,8 @@ USING_NS_CC;
 static const string PLATFORM_LAYER = "Platform";
 // 左右移动的加速度
 static const float RUNACCE = 2;
+// 上下爬的加速度
+static const float CLIMBACCE = 2;
 // 跳跃总时间ms
 static const clock_t JUMPTIME = 400;
 // 下落容错时间ms
@@ -28,7 +30,7 @@ public:
 	MainController();
 	virtual ~MainController();
 	// 工厂函数，需要所控制的物体及所控制的层传入
-	static MainController* getInstance(Player* in,cocos2d::Layer* layer,int maptag);
+	static MainController* getInstance(Player* in, cocos2d::Layer* layer, int maptag);
 	// 初始化
 	void init();
 	// 控制器内部的回调
@@ -41,6 +43,8 @@ public:
 	void keyPress();
 	// 按键松开响应
 	void keyRelease(EventKeyboard::KeyCode code);
+	// 状态处理
+	void condition();
 	// 按键map
 	std::map<EventKeyboard::KeyCode, bool> keymap;
 
@@ -53,13 +57,15 @@ private:
 	TMXTiledMap* map;
 	// 本身指针
 	static MainController* controller;
-	//用来实现左右移动按键互相覆盖的变量
-	int clickDir = 0;
+	// 用来实现左右移动按键互相覆盖的变量
+	int clickDirX = 0;
+	// 用来实现上下移动按键互相覆盖的变量
+	int clickDirY = 0;
 	// 返回按照速度可以移动到的位置
 	PlayerCol getNewPos(Vec2 speed);
 	// 是否在地面
 	bool isGround = false;
-	// 锁住按住，用来做一些固定移动操作
+	// 锁住按住反馈，用来做一些系统移动操作
 	bool lockPress = false;
 	// 是否在墙面
 	bool isWall = false;

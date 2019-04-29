@@ -37,51 +37,15 @@ void MainController::init()
 void MainController::update()
 {
 	// 尝试下落
-	player->air(5);
+	player->setAir(5);
 	// 按键按下
 	keyPress();
+	// 处理按键和下落判定后的临时状态的改变
+	condition();
+	// 矫正新状态
 	auto Condition = getNewPos(player->getSpeed());
-	if (isGround == true && jumpStart == 0 && clock() - prejumpStart <= FAULT_JUMPTIME) {
-		isGround = false;
-		jumpStart = clock();
-	}
-	if (clock() - prejumpStart > FAULT_JUMPTIME) {
-		prejumpStart = 0;
-	}
-	if (Condition.yCol == 1) {
-		// 当撞到头时，强制开始下落
-		player->air(5);
-		jumpStart = 0;
-	}
-	if (Condition.yCol == -1) {
-		// 落地
-		player->air(7);
-		isGround = true;
-		fallStart = 0;
-	}
-	if (Condition.yCol == 0) {
-		// 离开地面
-		if (fallStart == 0)
-			fallStart = clock();
-	}
-	if (Condition.xCol == 1 || Condition.xCol == -1) {
-		// 墙璧
-		isWall = true;
-		if (isGround == false && isHold == false) {
-			// 没有抓住时，滑墙
-			jumpStart = 0;
-			player->air(6);
-		}
-	}
-	else if (Condition.xCol == 0) {
-		// 离开墙壁
-		isWall = false;
-	}
-	if (fallStart != 0 && clock() - fallStart > FAULT_FALLTIME) {
-		isGround = false;
-	}
 	//CCLOG("%lf %lf", Condition.newPos.x, Condition.newPos.y);
-	Condition = getNewPos(player->getSpeed());
+	// 应用新位置
 	player->move(Condition.newPos);
 }
 
@@ -116,16 +80,22 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 	switch (code)
 	{
 	case EventKeyboard::KeyCode::KEY_A:
-		clickDir = -1;
+		clickDirX = -1;
 		break;
 	case EventKeyboard::KeyCode::KEY_D:
-		clickDir = 1;
+		clickDirX = 1;
+		break;
+	case EventKeyboard::KeyCode::KEY_S:
+		clickDirY = -1;
+		break;
+	case EventKeyboard::KeyCode::KEY_W:
+		clickDirY = 1;
 		break;
 	case  EventKeyboard::KeyCode::KEY_K:
 		prejumpStart = clock();
 		break;
 	case EventKeyboard::KeyCode::KEY_J:
-		if (isWall==true&&isGround==false)
+		if (isWall == true && isGround == false)
 			isHold = true;
 		break;
 	default:
@@ -135,22 +105,55 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 
 void MainController::keyPress()
 {
+	// 按住按键时判断是否抓住墙壁
+	if (keymap[EventKeyboard::KeyCode::KEY_J] == true && isWall == true && isGround == false) {
+		if (player->calEnergy(clock()) == true) {
+			// 还有能量时，停止下落
+			isHold = true;
+			player->setAir(4);
+			if (player->isRight)
+				player->setAcceX(5, isGround);
+			else
+				player->setAcceX(-5, isGround);
+		}
+		else {
+			// 无能量时设置为普通下滑
+			isHold = false;
+		}
+	}
+	else if (keymap[EventKeyboard::KeyCode::KEY_J] == false || isWall == false || isGround == true) {
+		//不再是爬墙时
+		isHold = false;
+	}
+
 	// 按键按下时的处理
 	if (isHold == false) {
 		// 当没有抓着墙壁时才允许触发X
-		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDir >= 0) {
+		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
 			player->setAnimation(AniState::RUN);
 			// 设置左右方向
-			player->isRight=true;
+			player->isRight = true;
 			player->setAcceX(RUNACCE, isGround);
 		}
-		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDir <= 0) {
+		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
 			player->setAnimation(AniState::RUN);
 			// 设置左右方向
 			player->isRight = false;
 			player->setAcceX(-RUNACCE, isGround);
 		}
 	}
+	else {
+		// 当有抓着墙壁时才允许触发Y
+		if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
+			player->setAnimation(AniState::RUN);
+			player->setAcceY(CLIMBACCE);
+		}
+		if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
+			player->setAnimation(AniState::RUN);
+			player->setAcceY(-CLIMBACCE);
+		}
+	}
+
 	if (keymap[EventKeyboard::KeyCode::KEY_K] == true) {
 		if (jumpStart != 0) {
 			if (clock() - jumpStart >= JUMPTIME) {
@@ -161,29 +164,18 @@ void MainController::keyPress()
 				// 跳跃的一阶段
 				player->setAnimation(AniState::JUMP);
 				//player->setDir(Dir::UP);
-				player->air(1);
+				player->setAir(1);
 			}
 			else {
 				// 跳跃的三阶段
-				player->air(3);
+				player->setAir(3);
 			}
 		}
-	}
-	if (keymap[EventKeyboard::KeyCode::KEY_J] == true && isWall==true&&isGround == false) {
-		// 按住按键时判断是否抓住墙壁
-		isHold = true;
-		// 停止下落
-		player->air(4);
-		if(player->isRight)
-			player->setAcceX(5, isGround);
-		else
-			player->setAcceX(-5, isGround);
-		// 计算体力消耗
 	}
 
 	if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false) {
 		// 左右键都放开时
-		clickDir = 0;
+		clickDirX = 0;
 		player->setAcceX(0, isGround);
 	}
 }
@@ -196,13 +188,25 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	case EventKeyboard::KeyCode::KEY_D:
 	{
 		player->setAnimation(AniState::IDLE);
-		--clickDir;
+		--clickDirX;
 		break;
 	}
 	case EventKeyboard::KeyCode::KEY_A:
 	{
 		player->setAnimation(AniState::IDLE);
-		++clickDir;
+		++clickDirX;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_W:
+	{
+		player->setAnimation(AniState::IDLE);
+		--clickDirY;
+		break;
+	}
+	case EventKeyboard::KeyCode::KEY_S:
+	{
+		player->setAnimation(AniState::IDLE);
+		++clickDirY;
 		break;
 	}
 	case EventKeyboard::KeyCode::KEY_K:
@@ -218,6 +222,51 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	}
 	default:
 		break;
+	}
+}
+
+void MainController::condition()
+{
+	auto Condition = getNewPos(player->getSpeed());
+	if (isGround == true && jumpStart == 0 && clock() - prejumpStart <= FAULT_JUMPTIME) {
+		isGround = false;
+		jumpStart = clock();
+	}
+	if (clock() - prejumpStart > FAULT_JUMPTIME) {
+		prejumpStart = 0;
+	}
+	if (Condition.yCol == 1) {
+		// 当撞到头时，强制开始下落
+		player->setAir(5);
+		jumpStart = 0;
+	}
+	if (Condition.yCol == -1) {
+		// 落地
+		player->setAir(7);
+		isGround = true;
+		fallStart = 0;
+		player->calEnergy(-1);
+	}
+	if (Condition.yCol == 0) {
+		// 离开地面
+		if (fallStart == 0)
+			fallStart = clock();
+	}
+	if (Condition.xCol == 1 || Condition.xCol == -1) {
+		// 墙璧
+		isWall = true;
+		if (isGround == false && isHold == false) {
+			// 没有抓住时，滑墙
+			jumpStart = 0;
+			player->setAir(6);
+		}
+	}
+	else if (Condition.xCol == 0) {
+		// 离开墙壁
+		isWall = false;
+	}
+	if (fallStart != 0 && clock() - fallStart > FAULT_FALLTIME) {
+		isGround = false;
 	}
 }
 
@@ -278,6 +327,7 @@ PlayerCol MainController::getNewPos(Vec2 speed)
 		}
 	}
 
+	// 计算新的Y位置
 	if (speedY != 0) {
 		// 取正负
 		int mark;
@@ -320,6 +370,8 @@ PlayerCol MainController::getNewPos(Vec2 speed)
 			}
 		}
 	}
+
+	// 返回计算好的新位置
 	PlayerCol ret;
 	ret.newPos = Vec2(newX, newY);
 	ret.xCol = xCol;

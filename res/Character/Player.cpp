@@ -144,7 +144,7 @@ Sprite* Player::getSpite()
 	return center;
 }
 
-void Player::setAcceX(float x,bool isGround)
+void Player::setAcceX(float x, bool isGround)
 {
 	//X轴移动
 	if (x > 0) {
@@ -190,7 +190,7 @@ void Player::setAcceX(float x,bool isGround)
 				Speed.x += SLOW_DOWN_X;
 			}
 			else {
-				if (Speed.x >- SLOW_DOWN_AIR) {
+				if (Speed.x > -SLOW_DOWN_AIR) {
 					Speed.x = 0;
 				}
 				Speed.x += SLOW_DOWN_AIR;
@@ -201,7 +201,31 @@ void Player::setAcceX(float x,bool isGround)
 	}
 }
 
-void Player::air(int step)
+void Player::setAcceY(float y)
+{
+	//Y轴移动,上下爬这种操作是没有惯性的
+	if (y > 0) {
+		if (Speed.y + y < MAX_PLAYER_SPEED_Y) {
+			Speed.y += y;
+		}
+		else {
+			Speed.y = MAX_PLAYER_SPEED_Y;
+		}
+	}
+	else if (y < 0) {
+		if (Speed.y + y > -MAX_PLAYER_SPEED_Y) {
+			Speed.y += y;
+		}
+		else {
+			Speed.y = -MAX_PLAYER_SPEED_Y;
+		}
+	}
+	else {
+		Speed.y = 0;
+	}
+}
+
+void Player::setAir(int step)
 {
 	switch (step)
 	{
@@ -217,7 +241,7 @@ void Player::air(int step)
 	case 3:
 		// 三阶段，减速上升并滑一段
 		if (Speed.y > -4) {
-			Speed.y -=0.5; 
+			Speed.y -= 0.5;
 		}
 		else if (Speed.y < -4) {
 			Speed.y = 0;
@@ -233,16 +257,16 @@ void Player::air(int step)
 			Speed.y -= FALL_ACCE;
 		}
 		else {
-			Speed.y =- MAX_SPEED_FALL;
+			Speed.y = -MAX_SPEED_FALL;
 		}
 		break;
 	case 6:
 		// 滑墙或抓墙二阶段，缓慢下降
-		if (Speed.y - SLIP_ACCE > -Max_SPEED_SLIP) {
+		if (Speed.y - SLIP_ACCE > -MAX_SPEED_SLIP) {
 			Speed.y -= SLIP_ACCE;
 		}
 		else {
-			Speed.y = -Max_SPEED_SLIP;
+			Speed.y = -MAX_SPEED_SLIP;
 		}
 		break;
 	case 7:
@@ -258,4 +282,24 @@ void Player::air(int step)
 Vec2 Player::getSpeed()
 {
 	return Speed;
+}
+
+bool Player::calEnergy(clock_t now)
+{
+	if (now == -1) {
+		// 落地时触发恢复
+		energy = 0;
+		return true;
+	}
+	if (energy == 0) {
+		// 第一次开始计算
+		energy = now;
+	}
+	if (now - energy > MAX_ENERGY) {
+		// 能量耗尽
+		return false;
+	}
+	else {
+		return true;
+	}
 }
