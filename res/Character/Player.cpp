@@ -179,8 +179,6 @@ void Player::setAcceX(float x, bool isGround)
 				Speed.x += SLOW_DOWN_AIR;
 			}
 		}
-		//else
-			//dir = Dir::STOP;
 	}
 }
 
@@ -188,19 +186,19 @@ void Player::setAcceY(float y)
 {
 	//Y轴移动,上下爬这种操作是没有惯性的
 	if (y > 0) {
-		if (Speed.y + y < MAX_PLAYER_SPEED_Y) {
+		if (Speed.y + y < MAX_PLAYER_SPEED_X) {
 			Speed.y += y;
 		}
 		else {
-			Speed.y = MAX_PLAYER_SPEED_Y;
+			Speed.y = MAX_PLAYER_SPEED_X;
 		}
 	}
 	else if (y < 0) {
-		if (Speed.y + y > -MAX_PLAYER_SPEED_Y) {
+		if (Speed.y + y > -MAX_PLAYER_SPEED_X) {
 			Speed.y += y;
 		}
 		else {
-			Speed.y = -MAX_PLAYER_SPEED_Y;
+			Speed.y = -MAX_PLAYER_SPEED_X;
 		}
 	}
 	else {
@@ -229,58 +227,9 @@ void Player::sysBackjump(float x)
 	}
 }
 
-void Player::setAir(int step)
+void Player::setSpeedY(float y)
 {
-	switch (step)
-	{
-	case 1:
-		// 一阶段，上升
-		if (Speed.y + JUMP_ACCE > MAX_SPEED_JUMP) {
-			Speed.y += JUMP_ACCE;
-		}
-		else {
-			Speed.y = MAX_SPEED_JUMP;
-		}
-		break;
-	case 3:
-		// 三阶段，减速上升并滑一段
-		if (Speed.y > -4) {
-			Speed.y -= 0.5;
-		}
-		else if (Speed.y < -4) {
-			Speed.y = 0;
-		}
-		break;
-	case 4:
-		// 抓墙一阶段，不会下降
-		Speed.y = 0;
-		break;
-	case 5:
-		// 五阶段，下落
-		if (Speed.y - FALL_ACCE > -MAX_SPEED_FALL) {
-			Speed.y -= FALL_ACCE;
-		}
-		else {
-			Speed.y = -MAX_SPEED_FALL;
-		}
-		break;
-	case 6:
-		// 滑墙或抓墙二阶段，缓慢下降
-		if (Speed.y - SLIP_ACCE > -MAX_SPEED_SLIP) {
-			Speed.y -= SLIP_ACCE;
-		}
-		else {
-			Speed.y = -MAX_SPEED_SLIP;
-		}
-		break;
-	case 7:
-		// 七阶段，落地
-		Speed.y = 0;
-		break;
-	default:
-		break;
-	}
-
+	Speed.y = y;
 }
 
 Vec2 Player::getSpeed()

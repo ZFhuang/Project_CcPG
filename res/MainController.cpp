@@ -36,14 +36,16 @@ void MainController::init()
 
 void MainController::update()
 {
-	// 尝试下落
-	player->setAir(5);
+	// 判断是否下落
+	//player->setAir(5);
 	// 按键按下
 	if (sysMove == true)
 		sysCtrl();
 	else
 		keyPress();
-	// 处理按键和下落判定后的临时状态的改变
+	// 环境处理(重力，风向之类)
+	environment();
+	// 判定临时状态
 	condition();
 	// 矫正新状态
 	auto Condition = getNewPos(player->getSpeed());
@@ -123,7 +125,7 @@ void MainController::keyPress()
 		if (player->useEnergy(ENERGYACCE)) {
 			// 还有能量时，停止下落
 			isHold = true;
-			player->setAir(4);
+			//player->setAir(4);
 			if (wallDir == 1)
 				player->setAcceX(5, isGround);
 			else if (wallDir == -1)
@@ -169,15 +171,7 @@ void MainController::keyPress()
 			if (clock() - jumpStart >= JUMPTIME) {
 				// 超过跳跃时间时
 				jumpStart = 0;
-			}
-			else if (clock() - jumpStart <= JUMPTIME*UPRATE) {
-				// 跳跃的一阶段
-				player->setAnimation(AniState::JUMP);
-				player->setAir(1);
-			}
-			else {
-				// 跳跃的三阶段
-				player->setAir(3);
+				player->setSpeedY(2);
 			}
 		}
 	}
@@ -197,21 +191,34 @@ void MainController::sysCtrl()
 			// 超过跳跃时间时
 			backjumpStart = 0;
 			sysMove = false;
-		}
-		else if (clock() - backjumpStart <= BACKJUMPTIME*UPRATE) {
-			// 跳跃的一阶段
-			player->setAnimation(AniState::JUMP);
-			player->setAir(1);
+			player->setSpeedY(0);
 		}
 		else {
-			// 跳跃的三阶段
-			player->setAir(3);
+			// 跳跃
+			player->setAnimation(AniState::JUMP);
+			player->setSpeedY(JUMPSPEED);
 		}
 		if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false)
 			player->sysBackjump(0);
 		else
 			player->sysBackjump(-wallDir*RUNACCE);
 	}
+}
+
+void MainController::environment()
+{
+	//Y
+	if (openY) {
+		if(wallDir==0)
+			player->setSpeedY(player->getSpeed().y + SCENE_Y);
+		else {
+			if (player->getSpeed().y<SLIPSPEED)
+				player->setSpeedY(SLIPSPEED);
+			else
+				player->setSpeedY(player->getSpeed().y + SCENE_Y /3);
+		}
+	}
+	//X
 }
 
 void MainController::keyRelease(EventKeyboard::KeyCode code)
@@ -246,6 +253,9 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	case EventKeyboard::KeyCode::KEY_K:
 	{
 		player->setAnimation(AniState::FALL);
+		if (clock() - jumpStart < JUMPTIME) {
+			player->setSpeedY(2);
+		}
 		jumpStart = 0;
 		break;
 	}
@@ -262,24 +272,25 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 void MainController::condition()
 {
 	auto Condition = getNewPos(player->getSpeed());
-	if (isGround == true && jumpStart == 0 && clock() - prejumpStart <= FAULT_JUMPTIME) {
-		isGround = false;
-		jumpStart = clock();
-	}
 	if (clock() - prejumpStart > FAULT_JUMPTIME) {
 		prejumpStart = 0;
 	}
-	if (Condition.yCol == 1) {
-		// 当撞到头时，强制开始下落
-		player->setAir(5);
-		jumpStart = 0;
-	}
 	if (Condition.yCol == -1) {
 		// 落地
-		player->setAir(7);
+		player->setSpeedY(0);
 		isGround = true;
 		fallStart = 0;
 		player->useEnergy(-1);
+	}
+	if (Condition.yCol == 1) {
+		// 当撞到头时，强制开始下落
+		player->setSpeedY(0);
+		jumpStart = 0;
+	}
+	if (isGround == true && jumpStart == 0 && clock() - prejumpStart <= FAULT_JUMPTIME) {
+		isGround = false;
+		jumpStart = clock();
+		player->setSpeedY(JUMPSPEED);
 	}
 	if (Condition.yCol == 0) {
 		// 离开地面
@@ -289,11 +300,13 @@ void MainController::condition()
 	if (Condition.xCol == 1 || Condition.xCol == -1) {
 		// 墙璧
 		wallDir = Condition.xCol;
-		outStart = 0;
 		if (isGround == false && isHold == false) {
 			// 没有抓住且在下滑时，滑墙
+			outStart = 0;
 			jumpStart = 0;
-			player->setAir(6);
+			if (player->getSpeed().y > 0) {
+				player->setSpeedY(0);
+			}
 		}
 	}
 	else if (Condition.xCol == 0) {

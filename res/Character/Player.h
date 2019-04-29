@@ -13,9 +13,6 @@ static const float	JUMP_ACCE = 1.2;
 static const float	FALL_ACCE = 1.2;
 static const float	SLIP_ACCE = 0.5;
 static const float  MAX_PLAYER_SPEED_X = 6;
-static const float	MAX_PLAYER_SPEED_Y = 5;
-static const float  MAX_SPEED_JUMP = 7;
-static const float  MAX_SPEED_FALL = 7;
 static const float	MAX_SPEED_SLIP = 3;
 static const float	MAX_ENERGY = 3000;	// 最多抓住墙3s
 
@@ -63,7 +60,7 @@ public:
 	// 反身跳
 	void sysBackjump(float x);
 	// 设置空中速度控制
-	void setAir(int step);
+	void setSpeedY(float y);
 	// 返回当前速度
 	Vec2 getSpeed();
 	// 计算体力

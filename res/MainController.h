@@ -6,6 +6,10 @@
 USING_NS_CC;
 
 static const string PLATFORM_LAYER = "Platform";
+// 纵向加速度
+static const float SCENE_Y = -0.4;
+// 横向加速度
+static const float SCENE_X = 0;
 // 左右移动的加速度
 static const float RUNACCE = 2;
 // 上下爬的加速度
@@ -13,7 +17,11 @@ static const float CLIMBACCE = 2;
 // 使用能量的速度
 static const float	ENERGYACCE = 1000 / 60;
 // 跳跃总时间ms
-static const clock_t JUMPTIME = 400;
+static const clock_t JUMPTIME = 200;
+// 跳跃起始速度
+static const float JUMPSPEED = 8;
+// 最大下滑速度
+static const float SLIPSPEED = -3;
 // 反身跳总时间ms
 static const clock_t BACKJUMPTIME = 200;
 // 下落容错时间ms
@@ -79,16 +87,18 @@ private:
 	int wallDir = 0;
 	// 是否抓墙
 	bool isHold = false;
-	// 是否开启重力
-	bool gravity = true;
+	// 是否开启环境Y
+	bool openY = true;
+	// 是否开启环境X
+	bool openX = true;
 	// 计算按下跳跃多久的计时
 	clock_t jumpStart = 0;
+	// 计算按下反身跳多久的计时
+	clock_t backjumpStart = 0;
 	// 计算离开地面多久的计时，用来做跳跃容错
 	clock_t fallStart = 0;
 	// 计算离开墙面多久的计时，用来做反身跳容错
 	clock_t outStart = 0;
 	// 提早跳跃计时器
 	clock_t prejumpStart = 0;
-	// 反身跳计时器
-	clock_t backjumpStart = 0;
 };
