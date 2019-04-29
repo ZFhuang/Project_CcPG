@@ -122,23 +122,6 @@ void Player::move(Vec2 pos)
 	center->setPosition(pos);
 }
 
-//void Player::setDir(Dir dir)
-//{
-//	if (this->dir == dir) {
-//		return;
-//	}
-//	this->dir = dir;
-//
-//	// 加了物理后翻转出现bug
-//	// 翻转不要用flip，因为flip的翻转是无关锚点的
-//	//if (this->dir == Dir::LEFT) {
-//	//	center->setRotationY(180);
-//	//}
-//	//else {
-//	//	center->setRotationY(0);
-//	//}
-//}
-
 Sprite* Player::getSpite()
 {
 	return center;
@@ -225,6 +208,27 @@ void Player::setAcceY(float y)
 	}
 }
 
+void Player::sysBackjump(float x)
+{
+	//X轴移动
+	if (x > 0) {
+		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
+			Speed.x += x;
+		}
+		else {
+			Speed.x = MAX_PLAYER_SPEED_X;
+		}
+	}
+	else if (x < 0) {
+		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
+			Speed.x += x;
+		}
+		else {
+			Speed.x = -MAX_PLAYER_SPEED_X;
+		}
+	}
+}
+
 void Player::setAir(int step)
 {
 	switch (step)
@@ -284,18 +288,17 @@ Vec2 Player::getSpeed()
 	return Speed;
 }
 
-bool Player::calEnergy(clock_t now)
+bool Player::useEnergy(float used)
 {
-	if (now == -1) {
+	if (used == -1) {
 		// 落地时触发恢复
-		energy = 0;
+		energy = MAX_ENERGY;
 		return true;
 	}
-	if (energy == 0) {
-		// 第一次开始计算
-		energy = now;
+	else {
+		energy -= used;
 	}
-	if (now - energy > MAX_ENERGY) {
+	if (energy <= 0) {
 		// 能量耗尽
 		return false;
 	}

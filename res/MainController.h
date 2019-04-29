@@ -10,8 +10,12 @@ static const string PLATFORM_LAYER = "Platform";
 static const float RUNACCE = 2;
 // 上下爬的加速度
 static const float CLIMBACCE = 2;
+// 使用能量的速度
+static const float	ENERGYACCE = 1000 / 60;
 // 跳跃总时间ms
 static const clock_t JUMPTIME = 400;
+// 反身跳总时间ms
+static const clock_t BACKJUMPTIME = 200;
 // 下落容错时间ms
 static const clock_t FAULT_FALLTIME = 40;
 // 提早跳跃容错时间ms
@@ -41,6 +45,10 @@ public:
 	void keyClick(EventKeyboard::KeyCode code);
 	// 按键按住响应,放在循环中每隔一段时间检测一次比较好
 	void keyPress();
+	// 锁住按键时的系统阶段
+	void sysCtrl();
+	// 环境赋予的被动加速度
+	void environment();
 	// 按键松开响应
 	void keyRelease(EventKeyboard::KeyCode code);
 	// 状态处理
@@ -55,7 +63,7 @@ private:
 	cocos2d::Layer* layer;
 	// 碰撞要用到的tiledmap
 	TMXTiledMap* map;
-	// 本身指针
+	// 本体指针
 	static MainController* controller;
 	// 用来实现左右移动按键互相覆盖的变量
 	int clickDirX = 0;
@@ -65,16 +73,20 @@ private:
 	PlayerCol getNewPos(Vec2 speed);
 	// 是否在地面
 	bool isGround = false;
-	// 锁住按住反馈，用来做一些系统移动操作
-	bool lockPress = false;
-	// 是否在墙面
-	bool isWall = false;
+	// 锁住按住反馈，进入系统移动操作
+	bool sysMove = false;
+	// 墙壁方向,0代表不贴墙
+	int wallDir = 0;
 	// 是否抓墙
 	bool isHold = false;
+	// 是否开启重力
+	bool gravity = true;
 	// 计算按下跳跃多久的计时
 	clock_t jumpStart = 0;
 	// 计算离开地面多久的计时，用来做跳跃容错
 	clock_t fallStart = 0;
+	// 计算离开墙面多久的计时，用来做反身跳容错
+	clock_t outStart = 0;
 	// 提早跳跃计时器
 	clock_t prejumpStart = 0;
 	// 反身跳计时器

@@ -39,7 +39,10 @@ void MainController::update()
 	// 尝试下落
 	player->setAir(5);
 	// 按键按下
-	keyPress();
+	if (sysMove == true)
+		sysCtrl();
+	else
+		keyPress();
 	// 处理按键和下落判定后的临时状态的改变
 	condition();
 	// 矫正新状态
@@ -81,9 +84,13 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 	{
 	case EventKeyboard::KeyCode::KEY_A:
 		clickDirX = -1;
+		// 设置左右方向
+		player->isRight = false;
 		break;
 	case EventKeyboard::KeyCode::KEY_D:
 		clickDirX = 1;
+		// 设置左右方向
+		player->isRight = true;
 		break;
 	case EventKeyboard::KeyCode::KEY_S:
 		clickDirY = -1;
@@ -92,10 +99,16 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 		clickDirY = 1;
 		break;
 	case  EventKeyboard::KeyCode::KEY_K:
-		prejumpStart = clock();
+		if (wallDir != 0) {
+			backjumpStart = clock();
+			sysMove = true;
+		}
+		else {
+			prejumpStart = clock();
+		}
 		break;
 	case EventKeyboard::KeyCode::KEY_J:
-		if (isWall == true && isGround == false)
+		if (wallDir != 0 && isGround == false)
 			isHold = true;
 		break;
 	default:
@@ -106,14 +119,14 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 void MainController::keyPress()
 {
 	// 按住按键时判断是否抓住墙壁
-	if (keymap[EventKeyboard::KeyCode::KEY_J] == true && isWall == true && isGround == false) {
-		if (player->calEnergy(clock()) == true) {
+	if (keymap[EventKeyboard::KeyCode::KEY_J] == true && wallDir != 0 && isGround == false) {
+		if (player->useEnergy(ENERGYACCE)) {
 			// 还有能量时，停止下落
 			isHold = true;
 			player->setAir(4);
-			if (player->isRight)
+			if (wallDir == 1)
 				player->setAcceX(5, isGround);
-			else
+			else if (wallDir == -1)
 				player->setAcceX(-5, isGround);
 		}
 		else {
@@ -121,7 +134,7 @@ void MainController::keyPress()
 			isHold = false;
 		}
 	}
-	else if (keymap[EventKeyboard::KeyCode::KEY_J] == false || isWall == false || isGround == true) {
+	else if (keymap[EventKeyboard::KeyCode::KEY_J] == false || wallDir != 0 || isGround == true) {
 		//不再是爬墙时
 		isHold = false;
 	}
@@ -131,14 +144,10 @@ void MainController::keyPress()
 		// 当没有抓着墙壁时才允许触发X
 		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
 			player->setAnimation(AniState::RUN);
-			// 设置左右方向
-			player->isRight = true;
 			player->setAcceX(RUNACCE, isGround);
 		}
 		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
 			player->setAnimation(AniState::RUN);
-			// 设置左右方向
-			player->isRight = false;
 			player->setAcceX(-RUNACCE, isGround);
 		}
 	}
@@ -154,6 +163,7 @@ void MainController::keyPress()
 		}
 	}
 
+	// 按住跳跃键时
 	if (keymap[EventKeyboard::KeyCode::KEY_K] == true) {
 		if (jumpStart != 0) {
 			if (clock() - jumpStart >= JUMPTIME) {
@@ -163,7 +173,6 @@ void MainController::keyPress()
 			else if (clock() - jumpStart <= JUMPTIME*UPRATE) {
 				// 跳跃的一阶段
 				player->setAnimation(AniState::JUMP);
-				//player->setDir(Dir::UP);
 				player->setAir(1);
 			}
 			else {
@@ -177,6 +186,31 @@ void MainController::keyPress()
 		// 左右键都放开时
 		clickDirX = 0;
 		player->setAcceX(0, isGround);
+	}
+}
+
+void MainController::sysCtrl()
+{
+	if (backjumpStart != 0) {
+		// 反身跳
+		if (clock() - backjumpStart >= BACKJUMPTIME) {
+			// 超过跳跃时间时
+			backjumpStart = 0;
+			sysMove = false;
+		}
+		else if (clock() - backjumpStart <= BACKJUMPTIME*UPRATE) {
+			// 跳跃的一阶段
+			player->setAnimation(AniState::JUMP);
+			player->setAir(1);
+		}
+		else {
+			// 跳跃的三阶段
+			player->setAir(3);
+		}
+		if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false)
+			player->sysBackjump(0);
+		else
+			player->sysBackjump(-wallDir*RUNACCE);
 	}
 }
 
@@ -245,7 +279,7 @@ void MainController::condition()
 		player->setAir(7);
 		isGround = true;
 		fallStart = 0;
-		player->calEnergy(-1);
+		player->useEnergy(-1);
 	}
 	if (Condition.yCol == 0) {
 		// 离开地面
@@ -254,16 +288,22 @@ void MainController::condition()
 	}
 	if (Condition.xCol == 1 || Condition.xCol == -1) {
 		// 墙璧
-		isWall = true;
+		wallDir = Condition.xCol;
+		outStart = 0;
 		if (isGround == false && isHold == false) {
-			// 没有抓住时，滑墙
+			// 没有抓住且在下滑时，滑墙
 			jumpStart = 0;
 			player->setAir(6);
 		}
 	}
 	else if (Condition.xCol == 0) {
+		isHold = false;
+		if (outStart == 0)
+			outStart = clock();
+	}
+	if (outStart != 0 && clock() - outStart > FAULT_FALLTIME) {
 		// 离开墙壁
-		isWall = false;
+		wallDir = 0;
 	}
 	if (fallStart != 0 && clock() - fallStart > FAULT_FALLTIME) {
 		isGround = false;

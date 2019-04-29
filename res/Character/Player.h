@@ -18,6 +18,7 @@ static const float  MAX_SPEED_JUMP = 7;
 static const float  MAX_SPEED_FALL = 7;
 static const float	MAX_SPEED_SLIP = 3;
 static const float	MAX_ENERGY = 3000;	// 最多抓住墙3s
+
 // 地面停止的惯性
 static const float  SLOW_DOWN_X = 5;
 // 空中停止的惯性
@@ -59,16 +60,14 @@ public:
 	void setAcceX(float x, bool isGround);
 	// 设置上下爬的加速度
 	void setAcceY(float y);
-	// 系统事件的附加加速度X
-	void setAcceSysX(float x, bool isGround);
-	// 系统事件的附加加速度Y
-	void setAcceSysY(float y, bool isGround);
+	// 反身跳
+	void sysBackjump(float x);
 	// 设置空中速度控制
 	void setAir(int step);
 	// 返回当前速度
 	Vec2 getSpeed();
 	// 计算体力
-	bool calEnergy(clock_t now);
+	bool useEnergy(float used);
 	// 当前水平面向的方向
 	bool isRight = false;
 
