@@ -5,23 +5,28 @@
 #include "Character\Player.h"
 USING_NS_CC;
 
+//速度即每秒改变的像素
+//每个图块是32*32的
+
 static const string PLATFORM_LAYER = "Platform";
 // 纵向加速度
-static const float SCENE_Y = -0.4;
+static const float SCENE_Y = -20;
 // 横向加速度
 static const float SCENE_X = 0;
+// 纵向最大速度
+static const float MAX_Y = 450;
 // 左右移动的加速度
-static const float RUNACCE = 2;
+static const float RUNSPEED = 200;
 // 上下爬的加速度
 static const float CLIMBACCE = 2;
 // 使用能量的速度
-static const float	ENERGYACCE = 1000 / 60;
+static const float	ENERGYACCE = 1000/1;
 // 跳跃总时间ms
 static const clock_t JUMPTIME = 200;
 // 跳跃起始速度
-static const float JUMPSPEED = 8;
+static const float JUMPSPEED = 50;
 // 最大下滑速度
-static const float SLIPSPEED = -3;
+static const float SLIPSPEED = -300;
 // 反身跳总时间ms
 static const clock_t BACKJUMPTIME = 200;
 // 下落容错时间ms
@@ -46,7 +51,7 @@ public:
 	// 初始化
 	void init();
 	// 控制器内部的回调
-	void update();
+	void update(float dt);
 	// 按键监听
 	void addKeyListener();
 	// 按键触发响应
@@ -101,4 +106,6 @@ private:
 	clock_t outStart = 0;
 	// 提早跳跃计时器
 	clock_t prejumpStart = 0;
+	// 当前帧间隔
+	float dt;
 };

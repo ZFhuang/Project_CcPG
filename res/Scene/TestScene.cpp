@@ -105,6 +105,6 @@ bool TestScene::init()
 void TestScene::update(float dt)
 {
 	// ¿ØÖÆÆ÷»Øµ÷
-	controller->update();
+	controller->update(dt);
 
 }

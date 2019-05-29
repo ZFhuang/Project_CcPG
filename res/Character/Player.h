@@ -6,20 +6,23 @@
 
 using namespace std;
 
+//速度即每秒改变的像素
+//每个图块是32*32的
+
 static const int	PLAYER_TAG = 110;
 static int  PLAYER_WIDTH = 40;
 static int  PLAYER_HEIGHT = 50;
 static const float	JUMP_ACCE = 1.2;
 static const float	FALL_ACCE = 1.2;
 static const float	SLIP_ACCE = 0.5;
-static const float  MAX_PLAYER_SPEED_X = 6;
-static const float	MAX_SPEED_SLIP = 3;
+static const float  MAX_PLAYER_SPEED_X = 200;
+static const float	MAX_SPEED_SLIP = 50;
 static const float	MAX_ENERGY = 3000;	// 最多抓住墙3s
 
 // 地面停止的惯性
-static const float  SLOW_DOWN_X = 5;
+static const float  SLOW_DOWN_X = 400;
 // 空中停止的惯性
-static const float  SLOW_DOWN_AIR = 0.5;
+static const float  SLOW_DOWN_AIR = 200;
 
 // 序列帧动画路径数组
 static string PLAYER_IMG_PATH[4] = {
@@ -59,8 +62,10 @@ public:
 	void setAcceY(float y);
 	// 反身跳
 	void sysBackjump(float x);
-	// 设置空中速度控制
+	// 设置Y速度
 	void setSpeedY(float y);
+	// 叠加Y速度
+	void addSpeedY(float y);
 	// 返回当前速度
 	Vec2 getSpeed();
 	// 计算体力

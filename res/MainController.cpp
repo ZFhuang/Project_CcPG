@@ -34,10 +34,10 @@ void MainController::init()
 	addKeyListener();
 }
 
-void MainController::update()
+void MainController::update(float dt)
 {
-	// 判断是否下落
-	//player->setAir(5);
+	// 刷新当前帧
+	this->dt = dt;
 	// 按键按下
 	if (sysMove == true)
 		sysCtrl();
@@ -144,13 +144,14 @@ void MainController::keyPress()
 	// 按键按下时的处理
 	if (isHold == false) {
 		// 当没有抓着墙壁时才允许触发X
+		// 普通跑步
 		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
 			player->setAnimation(AniState::RUN);
-			player->setAcceX(RUNACCE, isGround);
+			player->setAcceX(RUNSPEED, isGround);
 		}
 		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
 			player->setAnimation(AniState::RUN);
-			player->setAcceX(-RUNACCE, isGround);
+			player->setAcceX(-RUNSPEED, isGround);
 		}
 	}
 	else {
@@ -201,16 +202,23 @@ void MainController::sysCtrl()
 		if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false)
 			player->sysBackjump(0);
 		else
-			player->sysBackjump(-wallDir*RUNACCE);
+			player->sysBackjump(-wallDir*RUNSPEED);
 	}
 }
 
 void MainController::environment()
 {
-	//Y
+	//Y重力
 	if (openY) {
-		if(wallDir==0)
+		if (wallDir == 0) {
 			player->setSpeedY(player->getSpeed().y + SCENE_Y);
+			if (player->getSpeed().y > MAX_Y) {
+				player->setSpeedY(MAX_Y);
+			}
+			else if (player->getSpeed().y < -MAX_Y) {
+				player->setSpeedY(-MAX_Y);
+			}
+		}
 		else {
 			if (player->getSpeed().y<SLIPSPEED)
 				player->setSpeedY(SLIPSPEED);
@@ -218,7 +226,7 @@ void MainController::environment()
 				player->setSpeedY(player->getSpeed().y + SCENE_Y /3);
 		}
 	}
-	//X
+	//X阻力
 }
 
 void MainController::keyRelease(EventKeyboard::KeyCode code)
@@ -254,7 +262,7 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	{
 		player->setAnimation(AniState::FALL);
 		if (clock() - jumpStart < JUMPTIME) {
-			player->setSpeedY(2);
+			player->setSpeedY(JUMPSPEED);
 		}
 		jumpStart = 0;
 		break;
@@ -330,8 +338,8 @@ PlayerCol MainController::getNewPos(Vec2 speed)
 	auto cenSize = center->getContentSize();
 	auto cenX = center->getPositionX();
 	auto cenY = center->getPositionY();
-	auto speedX = speed.x;
-	auto speedY = speed.y;
+	auto speedX = speed.x*dt;
+	auto speedY = speed.y*dt;
 	auto newX = cenX, newY = cenY;
 	int xCol = 0;
 	int yCol = 0;
