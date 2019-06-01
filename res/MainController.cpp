@@ -51,12 +51,13 @@ void MainController::update(float dt)
 	auto Condition = getNewPos(player->getSpeed());
 	//CCLOG("%lf %lf", Condition.newPos.x, Condition.newPos.y);
 	// 应用新位置
-	player->move(Condition.newPos);
+	player->toNewPos(Condition.newPos);
+	player->update(dt);
 }
 
+// 初始化按键监听器
 void MainController::addKeyListener()
 {
-	// 按键监听
 	auto listener = EventListenerKeyboard::create();
 	// 记录按下
 	listener->onKeyPressed = [=](EventKeyboard::KeyCode keyCode, Event* event) {
@@ -78,7 +79,7 @@ void MainController::addKeyListener()
 }
 
 
-
+// 按键按下的响应
 void MainController::keyClick(EventKeyboard::KeyCode code)
 {
 	//CCLOG("%d",code);
@@ -118,6 +119,7 @@ void MainController::keyClick(EventKeyboard::KeyCode code)
 	}
 }
 
+// 按键按住的响应，利用按键表实现
 void MainController::keyPress()
 {
 	// 按住按键时判断是否抓住墙壁
@@ -172,7 +174,7 @@ void MainController::keyPress()
 			if (clock() - jumpStart >= JUMPTIME) {
 				// 超过跳跃时间时
 				jumpStart = 0;
-				player->setSpeedY(2);
+				player->addSpeedY(2);
 			}
 		}
 	}
@@ -186,6 +188,7 @@ void MainController::keyPress()
 
 void MainController::sysCtrl()
 {
+
 	if (backjumpStart != 0) {
 		// 反身跳
 		if (clock() - backjumpStart >= BACKJUMPTIME) {
@@ -210,30 +213,50 @@ void MainController::environment()
 {
 	//Y重力
 	if (openY) {
-		if (wallDir == 0) {
-			player->setSpeedY(player->getSpeed().y + SCENE_Y);
-			if (player->getSpeed().y > MAX_Y) {
-				player->setSpeedY(MAX_Y);
+		player->fall(SCENE_Y);
+	}
+	//X阻力
+	if (openX) {
+		//阻力不能影响到反向
+		if (isGround) {
+			if (player->getSpeed().x > 0) {
+				player->addSpeedX(SCENE_X_GROUND);
+				if (player->getSpeed().x < 0) {
+					player->setSpeedX(0);
+				}
 			}
-			else if (player->getSpeed().y < -MAX_Y) {
-				player->setSpeedY(-MAX_Y);
+			else if (player->getSpeed().x < 0) {
+				player->addSpeedX(-SCENE_X_GROUND);
+				if (player->getSpeed().x > 0) {
+					player->setSpeedX(0);
+				}
 			}
 		}
 		else {
-			if (player->getSpeed().y<SLIPSPEED)
-				player->setSpeedY(SLIPSPEED);
-			else
-				player->setSpeedY(player->getSpeed().y + SCENE_Y /3);
+			if (player->getSpeed().x > 0) {
+				player->addSpeedX(SCENE_X_AIR);
+				if (player->getSpeed().x < 0) {
+					player->setSpeedX(0);
+				}
+			}
+			else if (player->getSpeed().x < 0) {
+				player->addSpeedX(-SCENE_X_AIR);
+				if (player->getSpeed().x > 0) {
+					player->setSpeedX(0);
+				}
+			}
 		}
 	}
-	//X阻力
 }
 
+// 对放开按键事件的响应
 void MainController::keyRelease(EventKeyboard::KeyCode code)
 {
 	//CCLOG("%d", code);
+
 	switch (code)
 	{
+		//前面一段是为了优化wasd按下次序不受影响的手感
 	case EventKeyboard::KeyCode::KEY_D:
 	{
 		player->setAnimation(AniState::IDLE);
@@ -261,14 +284,13 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	case EventKeyboard::KeyCode::KEY_K:
 	{
 		player->setAnimation(AniState::FALL);
-		if (clock() - jumpStart < JUMPTIME) {
-			player->setSpeedY(JUMPSPEED);
-		}
+		// 停止跳跃计时，使得不会继续有加速
 		jumpStart = 0;
 		break;
 	}
 	case EventKeyboard::KeyCode::KEY_J:
 	{
+		// 放开墙壁
 		isHold = false;
 		break;
 	}
@@ -277,6 +299,7 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 	}
 }
 
+//判断状态，也就是各种碰撞的情况
 void MainController::condition()
 {
 	auto Condition = getNewPos(player->getSpeed());
@@ -331,6 +354,7 @@ void MainController::condition()
 	}
 }
 
+// 返回可达的新位置和会发生的碰撞情况
 PlayerCol MainController::getNewPos(Vec2 speed)
 {
 	TMXLayer* platforms = map->getLayer(PLATFORM_LAYER);

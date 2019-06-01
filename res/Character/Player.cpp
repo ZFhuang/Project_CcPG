@@ -117,7 +117,8 @@ bool Player::moveTo(Vec2 pos, Vec2 speed)
 	return false;
 }
 
-void Player::move(Vec2 pos)
+// 设置为新位置
+void Player::toNewPos(Vec2 pos)
 {
 	center->setPosition(pos);
 }
@@ -127,109 +128,177 @@ Sprite* Player::getSpite()
 	return center;
 }
 
-void Player::setAcceX(float x, bool isGround)
+void Player::update(float dt)
 {
-	//X轴移动
-	if (x > 0) {
-		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
-			Speed.x += x;
-		}
-		else {
-			Speed.x = MAX_PLAYER_SPEED_X;
-		}
-	}
-	else if (x < 0) {
-		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
-			Speed.x += x;
-		}
-		else {
-			Speed.x = -MAX_PLAYER_SPEED_X;
-		}
-	}
-	else {
-		//惯性设置，分两个状态
-		if (Speed.x > 0) {
-			if (isGround) {
-				//地面
-				if (Speed.x < SLOW_DOWN_X) {
-					Speed.x = 0;
-				}
-				Speed.x -= SLOW_DOWN_X;
-			}
-			else {
-				//空中惯性更大点
-				if (Speed.x < SLOW_DOWN_AIR) {
-					Speed.x = 0;
-				}
-				Speed.x -= SLOW_DOWN_AIR;
-			}
-		}
-		else if (Speed.x < 0) {
-			//对称
-			if (isGround) {
-				if (Speed.x > -SLOW_DOWN_X) {
-					Speed.x = 0;
-				}
-				Speed.x += SLOW_DOWN_X;
-			}
-			else {
-				if (Speed.x > -SLOW_DOWN_AIR) {
-					Speed.x = 0;
-				}
-				Speed.x += SLOW_DOWN_AIR;
-			}
-		}
+	this->dt = dt;
+}
+
+//void Player::setAcceX(float x, bool isGround)
+//{
+//	//X轴移动
+//	if (x > 0) {
+//		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
+//			Speed.x += x;
+//		}
+//		else {
+//			Speed.x = MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//	else if (x < 0) {
+//		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
+//			Speed.x += x;
+//		}
+//		else {
+//			Speed.x = -MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//	else {
+//		//惯性设置，分两个状态
+//		if (Speed.x > 0) {
+//			if (isGround) {
+//				//地面
+//				if (Speed.x < SLOW_DOWN_X) {
+//					Speed.x = 0;
+//				}
+//				Speed.x -= SLOW_DOWN_X;
+//			}
+//			else {
+//				//空中惯性更大点
+//				if (Speed.x < SLOW_DOWN_AIR) {
+//					Speed.x = 0;
+//				}
+//				Speed.x -= SLOW_DOWN_AIR;
+//			}
+//		}
+//		else if (Speed.x < 0) {
+//			//对称
+//			if (isGround) {
+//				if (Speed.x > -SLOW_DOWN_X) {
+//					Speed.x = 0;
+//				}
+//				Speed.x += SLOW_DOWN_X;
+//			}
+//			else {
+//				if (Speed.x > -SLOW_DOWN_AIR) {
+//					Speed.x = 0;
+//				}
+//				Speed.x += SLOW_DOWN_AIR;
+//			}
+//		}
+//	}
+//}
+//
+//void Player::setAcceY(float y)
+//{
+//	//Y轴移动,上下爬这种操作是没有惯性的
+//	if (y > 0) {
+//		if (Speed.y + y < MAX_PLAYER_SPEED_X) {
+//			Speed.y += y;
+//		}
+//		else {
+//			Speed.y = MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//	else if (y < 0) {
+//		if (Speed.y + y > -MAX_PLAYER_SPEED_X) {
+//			Speed.y += y;
+//		}
+//		else {
+//			Speed.y = -MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//	else {
+//		Speed.y = 0;
+//	}
+//}
+//
+//void Player::sysBackjump(float x)
+//{
+//	//X轴移动
+//	if (x > 0) {
+//		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
+//			Speed.x += x;
+//		}
+//		else {
+//			Speed.x = MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//	else if (x < 0) {
+//		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
+//			Speed.x += x;
+//		}
+//		else {
+//			Speed.x = -MAX_PLAYER_SPEED_X;
+//		}
+//	}
+//}
+
+void Player::jump()
+{
+	if (!isJumping) {
+		isJumping = true;
 	}
 }
 
-void Player::setAcceY(float y)
+// 进行跳跃，需要带入跳跃锁
+void Player::jump()
 {
-	//Y轴移动,上下爬这种操作是没有惯性的
-	if (y > 0) {
-		if (Speed.y + y < MAX_PLAYER_SPEED_X) {
-			Speed.y += y;
-		}
-		else {
-			Speed.y = MAX_PLAYER_SPEED_X;
-		}
-	}
-	else if (y < 0) {
-		if (Speed.y + y > -MAX_PLAYER_SPEED_X) {
-			Speed.y += y;
-		}
-		else {
-			Speed.y = -MAX_PLAYER_SPEED_X;
-		}
-	}
-	else {
-		Speed.y = 0;
+	if (!isJumping) {
+		isJumping = true;
 	}
 }
 
-void Player::sysBackjump(float x)
+void Player::setSpeedX(float x)
 {
-	//X轴移动
-	if (x > 0) {
-		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
-			Speed.x += x;
-		}
-		else {
-			Speed.x = MAX_PLAYER_SPEED_X;
-		}
+	Speed.x = x;
+}
+
+void Player::addSpeedX(float x)
+{
+	Speed.x += x;
+	if (Speed.x > MAX_X) {
+		Speed.x = MAX_X;
 	}
-	else if (x < 0) {
-		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
-			Speed.x += x;
-		}
-		else {
-			Speed.x = -MAX_PLAYER_SPEED_X;
-		}
+	if (Speed.x < -MAX_X) {
+		Speed.x = -MAX_X;
 	}
 }
 
 void Player::setSpeedY(float y)
 {
 	Speed.y = y;
+}
+
+void Player::addSpeedY(float y)
+{
+	Speed.y += y;
+	if (Speed.y > MAX_Y) {
+		Speed.y = MAX_Y;
+	}
+	if (Speed.y < MIN_Y) {
+		Speed.y = MIN_Y;
+	}
+}
+
+void Player::fall(float speed)
+{
+	if (isGround)
+		isGround = false;
+	if (!isSliping) {
+		addSpeedY(speed);
+	}
+	else {
+		addSpeedY(speed/2);
+		if (Speed.y < -MAX_SLIP)
+			setSpeedY(-MAX_SLIP);
+	}
+}
+
+void Player::ground()
+{
+	if(!isGround)
+		isGround = true;
+	Speed.y = 0;
 }
 
 Vec2 Player::getSpeed()

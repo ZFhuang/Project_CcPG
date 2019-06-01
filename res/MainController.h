@@ -9,13 +9,17 @@ USING_NS_CC;
 //每个图块是32*32的
 
 static const string PLATFORM_LAYER = "Platform";
-// 纵向加速度
+// 自由纵向阻力
 static const float SCENE_Y = -20;
-// 横向加速度
-static const float SCENE_X = 0;
+// 受阻纵向阻力
+static const float SCENE_Y = -20;
+// 地面横向阻力
+static const float SCENE_X_GROUND = -40;
+// 空中横向阻力
+static const float SCENE_X_AIR = -20;
 // 纵向最大速度
 static const float MAX_Y = 450;
-// 左右移动的加速度
+// 跑步速度
 static const float RUNSPEED = 200;
 // 上下爬的加速度
 static const float CLIMBACCE = 2;
@@ -24,7 +28,7 @@ static const float	ENERGYACCE = 1000/1;
 // 跳跃总时间ms
 static const clock_t JUMPTIME = 200;
 // 跳跃起始速度
-static const float JUMPSPEED = 50;
+static const float JUMPSPEED = 200;
 // 最大下滑速度
 static const float SLIPSPEED = -300;
 // 反身跳总时间ms
@@ -78,34 +82,29 @@ private:
 	TMXTiledMap* map;
 	// 本体指针
 	static MainController* controller;
+	// 当前帧间隔
+	float dt;
+
 	// 用来实现左右移动按键互相覆盖的变量
 	int clickDirX = 0;
 	// 用来实现上下移动按键互相覆盖的变量
 	int clickDirY = 0;
 	// 返回按照速度可以移动到的位置
 	PlayerCol getNewPos(Vec2 speed);
-	// 是否在地面
-	bool isGround = false;
+
 	// 锁住按住反馈，进入系统移动操作
 	bool sysMove = false;
 	// 墙壁方向,0代表不贴墙
 	int wallDir = 0;
 	// 是否抓墙
 	bool isHold = false;
-	// 是否开启环境Y
+
+
+	// 是否开启环境Y速度
 	bool openY = true;
-	// 是否开启环境X
+	// 是否开启环境X速度
 	bool openX = true;
-	// 计算按下跳跃多久的计时
-	clock_t jumpStart = 0;
-	// 计算按下反身跳多久的计时
-	clock_t backjumpStart = 0;
-	// 计算离开地面多久的计时，用来做跳跃容错
-	clock_t fallStart = 0;
-	// 计算离开墙面多久的计时，用来做反身跳容错
-	clock_t outStart = 0;
-	// 提早跳跃计时器
-	clock_t prejumpStart = 0;
-	// 当前帧间隔
-	float dt;
+
+
+
 };
