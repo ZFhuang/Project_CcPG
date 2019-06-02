@@ -14,19 +14,31 @@ static int PLAYER_WIDTH = 40;
 static int PLAYER_HEIGHT = 50;
 
 // 角色最大X移动速度
-static const float  MAX_RUN = 200;
+static const float  MAX_RUN = 220;
+// 角色最大Y移动速度
+static const float  MAX_CLIMB = 140;
 // 角色最大下滑速度
-static const float	MAX_SLIP = 70;
+static const float	MAX_SLIP = 300;
 // X世界最大速度
-static const float  MAX_X = 1000;
+static const float  MAX_X = 800;
 // Y世界最大速度
-static const float  MAX_Y = 1000;
-// Y世界最小速度
-static const float  MIN_Y = -1000;
-// 最多抓住墙3s
-static const float	TIMER_HOLDING = 3;
-// 最多跳跃1s
-static const float	TIMER_JUMPING = 1;
+static const float  MAX_Y = 800;
+// 跳跃起始速度
+static const float  JUMPSPEED = 500;
+// 最多抓住墙6s, 上爬3dt, 不动2dt, 下爬1dt, 落地刷新
+static const float	TIMER_CLIMBING = 6;
+// 反身跳操作锁定0.3s
+static const float	TIMER_BACKJUMP = 0.3;
+// 冲刺操作锁定0.3s
+static const float	TIMER_DASH = 0.2;
+// 边缘跳跃容错0.1s
+static const float	TIMER_FALL = 0.1;
+// 提前跳跃容错0.1s
+static const float	TIMER_PREJUMP = 0.1;
+// 反身跳跃容错0.1s
+static const float	TIMER_OUT = 0.1;
+// 最大冲刺次数
+static const int	DASH_TIMES = 1;
 
 
 
@@ -65,26 +77,32 @@ public:
 	// 时钟调用
 	void update(float dt);
 
-	// 设置跑步等本身的加速度
-	//void setAcceX(float x, bool isGround);
-	// 设置上下爬的加速度
-	//void setAcceY(float y);
-	// 反身跳
-	//void sysBackjump(float x);
 	// 跳跃
 	void jump();
+	// 冲刺
+	void dash(int dir);
+	// 结束跳跃
+	void jumpend();
 	// 跑步
 	void run(int dir);
+	// 爬墙
+	void climb(int dir);
 	// 下落
 	void fall(float speed);
+	// 撞到头
+	void headCol();
+	// 滑墙
+	void slip(int wallDir);
+	// 抓墙
+	void hold(bool isHolding);
 	// 落地
-	void ground();
+	void ground(bool isGround);
+	// 移动阻力
+	void slow(float speed);
+	// 风阻
+	void wind(float speed);
 	// 返回当前速度
 	Vec2 getSpeed();
-	// 计算体力
-	bool useEnergy(float used);
-	// 当前水平面向的方向
-	bool isRight = false;
 
 private:
 	AniState nowAni = AniState::FALL;
@@ -92,30 +110,40 @@ private:
 	clock_t energy = 0;
 	Animate* animate = nullptr;
 	Sprite* center = nullptr;
-	//PhysicsBody *triggerX;
-	//PhysicsBody *triggerY;
+
 	// 当前速度
 	Vec2 Speed = Vec2(0, 0);
-
 	// 是否在地面
 	bool isGround = false;
 	// 是否在跳跃
 	bool isJumping = false;
 	// 是否滑墙
 	bool isSliping = false;
+	// 是否抓墙
+	bool isHolding = false;
+	// 墙的方向
+	int wallDir = 0;
+	// 保存下反身跳的朝向
+	int backDir = 0;
+	// 可冲刺的次数
+	int dashNum = 1;
+	// 当前水平面向的方向
+	bool isRight = true;
 
-	// 上帧的间隔
+	// 与上帧的间隔
 	float dt=0;
-	// 计算按下跳跃多久的计时
-	float jumpStart = 0;
-	// 计算按下反身跳多久的计时
-	float backjumpStart = 0;
-	// 计算离开地面多久的计时，用来做边缘跳跃容错
-	float fallStart = 0;
-	// 计算离开墙面多久的计时，用来做反身跳容错
-	float outStart = 0;
+	// 离开地面计时器，用来做边缘跳跃容错
+	float fallTimer = -1;
+	// 离开墙面计时器，用来做反身跳容错
+	float outTimer = -1;
 	// 提早跳跃计时器，用来做落地跳跃容错
-	float prejumpStart = 0;
+	float prejumpTimer = -1;
+	// 反身跳计时器，在一小段时间内不能左右移动
+	float backjumpTimer = -1;
+	// 冲刺计时器，在一小段时间内不能左右移动
+	float dashTimer = -1;
+	// 攀爬计时器，用来作为能量
+	float climbTimer = -1;
 
 	// 设置X速度
 	void setSpeedX(float x);
@@ -125,4 +153,6 @@ private:
 	void setSpeedY(float y);
 	// 叠加Y速度
 	void addSpeedY(float y);
+	// 计时器刷新
+	void timer();
 };

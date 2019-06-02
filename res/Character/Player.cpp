@@ -131,196 +131,399 @@ Sprite* Player::getSpite()
 void Player::update(float dt)
 {
 	this->dt = dt;
-}
-
-//void Player::setAcceX(float x, bool isGround)
-//{
-//	//X轴移动
-//	if (x > 0) {
-//		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
-//			Speed.x += x;
-//		}
-//		else {
-//			Speed.x = MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//	else if (x < 0) {
-//		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
-//			Speed.x += x;
-//		}
-//		else {
-//			Speed.x = -MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//	else {
-//		//惯性设置，分两个状态
-//		if (Speed.x > 0) {
-//			if (isGround) {
-//				//地面
-//				if (Speed.x < SLOW_DOWN_X) {
-//					Speed.x = 0;
-//				}
-//				Speed.x -= SLOW_DOWN_X;
-//			}
-//			else {
-//				//空中惯性更大点
-//				if (Speed.x < SLOW_DOWN_AIR) {
-//					Speed.x = 0;
-//				}
-//				Speed.x -= SLOW_DOWN_AIR;
-//			}
-//		}
-//		else if (Speed.x < 0) {
-//			//对称
-//			if (isGround) {
-//				if (Speed.x > -SLOW_DOWN_X) {
-//					Speed.x = 0;
-//				}
-//				Speed.x += SLOW_DOWN_X;
-//			}
-//			else {
-//				if (Speed.x > -SLOW_DOWN_AIR) {
-//					Speed.x = 0;
-//				}
-//				Speed.x += SLOW_DOWN_AIR;
-//			}
-//		}
-//	}
-//}
-//
-//void Player::setAcceY(float y)
-//{
-//	//Y轴移动,上下爬这种操作是没有惯性的
-//	if (y > 0) {
-//		if (Speed.y + y < MAX_PLAYER_SPEED_X) {
-//			Speed.y += y;
-//		}
-//		else {
-//			Speed.y = MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//	else if (y < 0) {
-//		if (Speed.y + y > -MAX_PLAYER_SPEED_X) {
-//			Speed.y += y;
-//		}
-//		else {
-//			Speed.y = -MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//	else {
-//		Speed.y = 0;
-//	}
-//}
-//
-//void Player::sysBackjump(float x)
-//{
-//	//X轴移动
-//	if (x > 0) {
-//		if (Speed.x + x < MAX_PLAYER_SPEED_X) {
-//			Speed.x += x;
-//		}
-//		else {
-//			Speed.x = MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//	else if (x < 0) {
-//		if (Speed.x + x > -MAX_PLAYER_SPEED_X) {
-//			Speed.x += x;
-//		}
-//		else {
-//			Speed.x = -MAX_PLAYER_SPEED_X;
-//		}
-//	}
-//}
-
-void Player::jump()
-{
-	if (!isJumping) {
-		isJumping = true;
+	timer();
+	if (Speed.x > 0) {
+		isRight = true;
+	}
+	else if (Speed.x < 0) {
+		isRight = false;
 	}
 }
 
-// 进行跳跃，需要带入跳跃锁
+// 进行跳跃
 void Player::jump()
 {
-	if (!isJumping) {
+	if (isGround && !isJumping) {
+		//普通跳
 		isJumping = true;
+		isGround = false;
+		setSpeedY(JUMPSPEED);
+		prejumpTimer = -1;
+	}
+	else if (isSliping && !isJumping) {
+		//反身跳
+		isJumping = true;
+		isSliping = false;
+		setSpeedY(JUMPSPEED*0.75);
+		setSpeedX(-MAX_RUN*backDir);
+		prejumpTimer = -1;
+		backjumpTimer = 0;
+	}
+	else {
+		if (prejumpTimer < 0)
+			prejumpTimer = 0;
+	}
+}
+
+// 八方向冲刺
+void Player::dash(int dir)
+{
+	if (dashNum > 0 && (dashTimer<0 || dashTimer>TIMER_DASH / 2)) {
+		switch (dir)
+		{
+		case 0:
+			// dir 0 当前水平方向
+			if (isRight) {
+				// dir 3 D
+				setSpeedX(MAX_X*0.8);
+				setSpeedY(0);
+				isJumping = true;
+				isGround = false;
+			}
+			else
+			{
+				// dir 7 A
+				//要照顾根号2距离
+				setSpeedX(-MAX_X*0.8);
+				setSpeedY(0);
+				isJumping = true;
+				isGround = false;
+			}
+			break;
+		case 1:
+			// dir 1 W
+			setSpeedX(0);
+			setSpeedY(MAX_Y*0.8);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 2:
+			// dir 2 WD
+			//要照顾根号2距离
+			setSpeedX(MAX_X*0.8 / 1.4);
+			setSpeedY(MAX_Y*0.8 / 1.4);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 3:
+			// dir 3 D
+			setSpeedX(MAX_X*0.8);
+			setSpeedY(0);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 4:
+			// dir 4 DS
+			setSpeedX(MAX_X*0.8 / 1.4);
+			setSpeedY(-MAX_Y*0.8 / 1.4);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 5:
+			// dir 5 S
+			setSpeedX(0);
+			setSpeedY(-MAX_Y*0.8);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 6:
+			// dir 6 SA
+			//要照顾根号2距离
+			setSpeedX(-MAX_X*0.8 / 1.4);
+			setSpeedY(-MAX_Y*0.8 / 1.4);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 7:
+			// dir 7 A
+			setSpeedX(-MAX_X*0.8);
+			setSpeedY(0);
+			isJumping = true;
+			isGround = false;
+			break;
+		case 8:
+			// dir 8 AW
+			//要照顾根号2距离
+			setSpeedX(-MAX_X*0.8 / 1.4);
+			setSpeedY(MAX_Y*0.8 / 1.4);
+			isJumping = true;
+			isGround = false;
+			break;
+		default:
+			break;
+		}
+		dashTimer = 0;
+		dashNum--;
+	}
+}
+
+// 结束下落
+void Player::jumpend()
+{
+	if (isJumping) {
+		//防止跳跃高度过低
+		if (Speed.y > JUMPSPEED / 2) {
+			setSpeedY(Speed.y / 1.5);
+		}
+		else if (Speed.y > 0) {
+			//使下落自然
+			setSpeedY(Speed.y / 2);
+		}
+		isJumping = false;
+	}
+}
+
+// 跑动
+void Player::run(int dir)
+{
+	//限制抓取和反身跳途中不可以移动
+	if (!isHolding&&backjumpTimer < 0) {
+		if (isGround || isSliping) {
+			//乘三是为了加速快一点
+			addSpeedX(dir*MAX_RUN * 8);
+			if (Speed.x > MAX_RUN) {
+				setSpeedX(MAX_RUN);
+			}
+			else if (Speed.x < -MAX_RUN) {
+				setSpeedX(-MAX_RUN);
+			}
+		}
+		else {
+			//空中加速慢一点
+			addSpeedX(dir*MAX_RUN * 3);
+			if (Speed.x > MAX_RUN) {
+				setSpeedX(MAX_RUN);
+			}
+			else if (Speed.x < -MAX_RUN) {
+				setSpeedX(-MAX_RUN);
+			}
+		}
+	}
+}
+
+// 攀爬
+void Player::climb(int dir)
+{
+	if (isHolding && (!isGround) && wallDir != 0) {
+		if (climbTimer < -1) {
+			climbTimer = 0;
+		}
+		if (climbTimer < TIMER_CLIMBING) {
+			//由于是爬行所以无需阻力
+			setSpeedY(dir*MAX_CLIMB);
+			//上爬3dt, 不动2dt, 下爬1dt, 落地刷新
+			climbTimer += dt*(dir + 2);
+		}
+		else {
+			isHolding = false;
+		}
 	}
 }
 
 void Player::setSpeedX(float x)
 {
-	Speed.x = x;
+	// 非冲刺状态才能自由改变Speed
+	if (dashTimer < 0)
+		Speed.x = x;
 }
 
 void Player::addSpeedX(float x)
 {
-	Speed.x += x;
+	setSpeedX(Speed.x + x*dt);
 	if (Speed.x > MAX_X) {
-		Speed.x = MAX_X;
+		setSpeedX(MAX_X);
 	}
 	if (Speed.x < -MAX_X) {
-		Speed.x = -MAX_X;
+		setSpeedX(-MAX_X);
 	}
 }
 
 void Player::setSpeedY(float y)
 {
-	Speed.y = y;
+	// 非冲刺状态才能自由改变Speed
+	if (dashTimer < 0)
+		Speed.y = y;
 }
 
 void Player::addSpeedY(float y)
 {
-	Speed.y += y;
+	setSpeedY(Speed.y + y*dt);
 	if (Speed.y > MAX_Y) {
-		Speed.y = MAX_Y;
+		setSpeedY(MAX_Y);
 	}
-	if (Speed.y < MIN_Y) {
-		Speed.y = MIN_Y;
+	if (Speed.y < -MAX_Y) {
+		setSpeedY(-MAX_Y);
 	}
 }
 
+// 计时器刷新
+void Player::timer()
+{
+	if (fallTimer >= 0) {
+		fallTimer += dt;
+		if (fallTimer >= TIMER_FALL) {
+			isGround = false;
+			fallTimer = -1;
+		}
+	}
+	if (prejumpTimer >= 0) {
+		prejumpTimer += dt;
+		if (prejumpTimer >= TIMER_PREJUMP) {
+			prejumpTimer = -1;
+		}
+		else {
+			jump();
+		}
+	}
+	if (outTimer >= 0) {
+		outTimer += dt;
+		if (outTimer >= TIMER_OUT) {
+			isSliping = false;
+			outTimer = -1;
+		}
+	}
+	if (backjumpTimer >= 0) {
+		backjumpTimer += dt;
+		if (backjumpTimer >= TIMER_BACKJUMP) {
+			backjumpTimer = -1;
+		}
+	}
+	if (dashTimer >= 0) {
+		dashTimer += dt;
+		if (dashTimer >= TIMER_DASH) {
+			dashTimer = -1;
+			//使得停止不会太突然
+			setSpeedX(Speed.x / 3);
+			setSpeedY(Speed.y / 3);
+		}
+	}
+}
+
+// 下落
 void Player::fall(float speed)
 {
-	if (isGround)
-		isGround = false;
-	if (!isSliping) {
-		addSpeedY(speed);
-	}
-	else {
-		addSpeedY(speed/2);
-		if (Speed.y < -MAX_SLIP)
-			setSpeedY(-MAX_SLIP);
+	if (!isHolding) {
+		if (isGround&&fallTimer < 0) {
+			fallTimer = 0;
+		}
+		if (isSliping) {
+			addSpeedY(speed / 2);
+			if (Speed.y > 0) {
+				setSpeedY(Speed.y / 3);
+			}
+			if (Speed.y < -MAX_SLIP)
+				setSpeedY(-MAX_SLIP);
+		}
+		else {
+			addSpeedY(speed);
+		}
 	}
 }
 
-void Player::ground()
+// 撞到头
+void Player::headCol()
 {
-	if(!isGround)
-		isGround = true;
-	Speed.y = 0;
+	//强制下落
+	jumpend();
+	setSpeedY(0);
+}
+
+// 下滑
+void Player::slip(int wallDir)
+{
+	//下滑
+	if (this->wallDir != 0)
+		backDir = this->wallDir;
+	this->wallDir = wallDir;
+	if (this->wallDir != 0) {
+		isSliping = true;
+		outTimer = -1;
+	}
+	else {
+		if (isSliping == true && outTimer < 0)
+			outTimer = 0;
+	}
+}
+
+// 抓墙
+void Player::hold(bool isHolding)
+{
+	if (isSliping&&wallDir != 0 && (climbTimer < TIMER_CLIMBING)) {
+		//可抓墙
+		if ((!this->isHolding) && isHolding) {
+			setSpeedY(0);
+		}
+		this->isHolding = isHolding;
+		if (this->isHolding) {
+			setSpeedX(wallDir * 70);
+		}
+	}
+	else {
+		//不可抓墙
+		this->isHolding = false;
+		this->isJumping = false;
+	}
+}
+
+// 地面
+void Player::ground(bool isGround)
+{
+	if (isGround) {
+		//落地
+		this->isGround = true;
+		isJumping = false;
+		isSliping = false;
+		isHolding = false;
+		fallTimer = -1;
+		climbTimer = -1;
+		dashNum = DASH_TIMES;
+		setSpeedY(0);
+	}
+	else {
+		if (fallTimer < 0) {
+			this->isGround = false;
+		}
+	}
+}
+
+// 缓速停止
+void Player::slow(float speed)
+{
+	if (!isHolding) {
+		//阻力不能影响到反向
+		if (isGround) {
+			if (Speed.x > 0) {
+				addSpeedX(speed);
+				if (Speed.x < 0) {
+					setSpeedX(0);
+				}
+			}
+			else if (Speed.x < 0) {
+				addSpeedX(-speed);
+				if (Speed.x > 0) {
+					setSpeedX(0);
+				}
+			}
+		}
+		else {
+			//空中阻力稍小一点
+			if (Speed.x > 0) {
+				addSpeedX(speed / 2);
+				if (Speed.x < 0) {
+					setSpeedX(0);
+				}
+			}
+			else if (Speed.x < 0) {
+				addSpeedX(-speed / 2);
+				if (Speed.x > 0) {
+					setSpeedX(0);
+				}
+			}
+		}
+	}
 }
 
 Vec2 Player::getSpeed()
 {
 	return Speed;
-}
-
-bool Player::useEnergy(float used)
-{
-	if (used == -1) {
-		// 落地时触发恢复
-		energy = MAX_ENERGY;
-		return true;
-	}
-	else {
-		energy -= used;
-	}
-	if (energy <= 0) {
-		// 能量耗尽
-		return false;
-	}
-	else {
-		return true;
-	}
 }
