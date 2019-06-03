@@ -15,7 +15,7 @@ static int PLAYER_HEIGHT = 45;
 // 角色最大X移动速度
 static const float  MAX_RUN = 220;
 // 角色最大Y移动速度
-static const float  MAX_CLIMB = 140;
+static const float  MAX_CLIMB = 110;
 // 角色最大下滑速度
 static const float	MAX_SLIP = 300;
 // X世界最大速度
@@ -72,9 +72,11 @@ public:
 	// 移动
 	void toNewPos(cocos2d::Vec2 pos);
 	// 返回此精灵
-	cocos2d::Sprite* getSpite();
+	cocos2d::Sprite* getSprite();
 	// 时钟调用
 	void update(float dt);
+	// 返回位置
+	Vec2 getPos();
 
 	// 跳跃
 	void jump();

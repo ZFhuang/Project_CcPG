@@ -28,8 +28,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
 	if (!glview) {
-		// 修改窗口名
-		glview = GLViewImpl::create("Protype");
+		// 修改窗口名且全屏
+		//glview = GLViewImpl::create("Protype");
+		glview = GLViewImpl::createWithFullScreen("Protype");
 		director->setOpenGLView(glview);
 	}
 
@@ -38,6 +39,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 	// 设置回调次数(在性能过剩时可以视为帧数)
 	director->setAnimationInterval(1.0 / 60);
+
+	//dwglSwapIntervalEXT(0);
 
 	// 载入初始场景
 	auto scene = TestScene::createScene();

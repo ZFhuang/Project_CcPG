@@ -126,7 +126,7 @@ void Player::toNewPos(Vec2 pos)
 	center->setPosition(pos);
 }
 
-Sprite* Player::getSpite()
+Sprite* Player::getSprite()
 {
 	return center;
 }
@@ -141,6 +141,11 @@ void Player::update(float dt)
 	else if (Speed.x < 0) {
 		isRight = false;
 	}
+}
+
+Vec2 Player::getPos()
+{
+	return center->getPosition();
 }
 
 // ½øĞĞÌøÔ¾

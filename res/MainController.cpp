@@ -320,7 +320,7 @@ void MainController::timer()
 PlayerCol MainController::getNewPos(Vec2 speed)
 {
 	TMXLayer* platforms = map->getLayer(PLATFORM_LAYER);
-	auto center = player->getSpite();
+	auto center = player->getSprite();
 	auto cenSize = center->getContentSize();
 	auto cenX = center->getPositionX();
 	auto cenY = center->getPositionY();

@@ -4,7 +4,7 @@
 
 void Needle::update(float dt)
 {
-	if (sprite->getBoundingBox().intersectsRect(player->getSpite()->getBoundingBox())) {
+	if (sprite->getBoundingBox().intersectsRect(player->getSprite()->getBoundingBox())) {
 		//×²µ½Õë
 		gameManager->restartScene();
 	}
