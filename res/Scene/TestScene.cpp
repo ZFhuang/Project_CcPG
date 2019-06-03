@@ -94,12 +94,12 @@ void TestScene::loadCamera()
 	camera = Camera::create();
 	camera->setCameraFlag(CameraFlag::USER1);
 	cameraRange = new Rect();
-	followPoint = Node::create();
+	//followPoint = Node::create();
 
 	//让此场景切换为用户摄像机
 	this->setCameraMask((short)CameraFlag::USER1);
 	this->addChild(camera);
-	this->addChild(followPoint);
+	//this->addChild(followPoint);
 
 	//初始化相机参数
 	auto sX = map->getContentSize().width;
@@ -107,16 +107,18 @@ void TestScene::loadCamera()
 	Vec3 eyePosOld = camera->getPosition3D();
 	Vec3 eyePos = Vec3(sX / 2, sY / 2, eyePosOld.z);
 	camera->setPosition3D(eyePos);
-	camera->setScaleX(camera->getScaleX() / CAM_SCALE);
-	camera->setScaleY(camera->getScaleY() / CAM_SCALE);
-	followPoint->setPositionX(sX / 2);
-	followPoint->setPositionY(sY / 2);
+	// 自适应缩放
+	float cam_scale =CAM_SCALE* (this->getContentSize().height/1080);
+	camera->setScaleX(camera->getScaleX() / cam_scale);
+	camera->setScaleY(camera->getScaleY() / cam_scale);
+	//followPoint->setPositionX(sX / 2);
+	//followPoint->setPositionY(sY / 2);
 
 	//计算相机的可移动空间
-	auto rangeXMin = 0 + this->getContentSize().width / CAM_SCALE / 2;
-	auto rangeXMax = sX - this->getContentSize().width / CAM_SCALE / 2;
-	auto rangeYMin = 0 + this->getContentSize().height / CAM_SCALE / 2;
-	auto rangeYMax = sY - this->getContentSize().height / CAM_SCALE / 2;
+	auto rangeXMin = 0 + this->getContentSize().width / cam_scale / 2;
+	auto rangeXMax = sX - this->getContentSize().width / cam_scale / 2;
+	auto rangeYMin = 0 + this->getContentSize().height / cam_scale / 2;
+	auto rangeYMax = sY - this->getContentSize().height / cam_scale / 2;
 
 	if (rangeXMin >= rangeXMax) {
 		rangeXMin = 0;
@@ -129,42 +131,69 @@ void TestScene::loadCamera()
 
 	//设置为可移动矩形
 	cameraRange->setRect(rangeXMin, rangeYMin, rangeXMax - rangeXMin, rangeYMax - rangeYMin);
-	camera->runAction(Follow::create(followPoint));
+	//camera->runAction(Follow::create(followPoint));
 }
 
 void TestScene::cameraFollow()
 {
+	////在移动矩形中修改位置
+	//auto pos = player->getPos();
+	//if (cameraRange->size.width > 0) {
+	//	if ((pos.x > cameraRange->getMinX()) &&
+	//		(pos.x < cameraRange->getMaxX())) {
+	//		followPoint->setPositionX(pos.x);
+	//	}
+	//	else if ((pos.x < cameraRange->getMinX())) {
+	//		followPoint->setPositionX(cameraRange->getMinX());
+	//	}
+	//	else if ((pos.x > cameraRange->getMaxX())) {
+	//		followPoint->setPositionX(cameraRange->getMaxX());
+	//	}
+	//}
+	//if (cameraRange->size.height > 0) {
+	//	if ((pos.y > cameraRange->getMinY()) &&
+	//		(pos.y < cameraRange->getMaxY())) {
+	//		followPoint->setPositionY(pos.y);
+	//	}
+	//	else if ((pos.y < cameraRange->getMinY())) {
+	//		followPoint->setPositionY(cameraRange->getMinY());
+	//	}
+	//	else if ((pos.y > cameraRange->getMaxY())) {
+	//		followPoint->setPositionY(cameraRange->getMaxY());
+	//	}
+	//}
+	//followPoint->setPositionX(this->getContentSize().width / 2 - followPoint->getPositionX());
+	//followPoint->setPositionY(this->getContentSize().height/2 - followPoint->getPositionY());
+	//CCLOG("fo:%f %f", followPoint->getPositionX(), followPoint->getPositionY());
+	//CCLOG("pl:%f %f", player->getSprite()->getPositionX(), player->getSprite()->getPositionY());
+	//CCLOG("ca:%f %f", camera->getPositionX(), camera->getPositionY());
+
 	//在移动矩形中修改位置
 	auto pos = player->getPos();
 	if (cameraRange->size.width > 0) {
 		if ((pos.x > cameraRange->getMinX()) &&
 			(pos.x < cameraRange->getMaxX())) {
-			followPoint->setPositionX(pos.x);
+			camera->setPositionX(pos.x);
 		}
 		else if ((pos.x < cameraRange->getMinX())) {
-			followPoint->setPositionX(cameraRange->getMinX());
+			camera->setPositionX(cameraRange->getMinX());
 		}
 		else if ((pos.x > cameraRange->getMaxX())) {
-			followPoint->setPositionX(cameraRange->getMaxX());
+			camera->setPositionX(cameraRange->getMaxX());
 		}
 	}
 	if (cameraRange->size.height > 0) {
 		if ((pos.y > cameraRange->getMinY()) &&
 			(pos.y < cameraRange->getMaxY())) {
-			followPoint->setPositionY(pos.y);
+			camera->setPositionY(pos.y);
 		}
 		else if ((pos.y < cameraRange->getMinY())) {
-			followPoint->setPositionY(cameraRange->getMinY());
+			camera->setPositionY(cameraRange->getMinY());
 		}
 		else if ((pos.y > cameraRange->getMaxY())) {
-			followPoint->setPositionY(cameraRange->getMaxY());
+			camera->setPositionY(cameraRange->getMaxY());
 		}
 	}
-	followPoint->setPositionX(this->getContentSize().width / 2 - followPoint->getPositionX());
-	followPoint->setPositionY(this->getContentSize().height/2 - followPoint->getPositionY());
-	//CCLOG("fo:%f %f", followPoint->getPositionX(), followPoint->getPositionY());
-	//CCLOG("pl:%f %f", player->getSprite()->getPositionX(), player->getSprite()->getPositionY());
-	//CCLOG("ca:%f %f", camera->getPositionX(), camera->getPositionY());
 }
 
 bool TestScene::init()

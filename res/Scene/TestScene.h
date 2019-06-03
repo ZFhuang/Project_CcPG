@@ -11,7 +11,7 @@ class MainController;
 
 //地图的xml文件位置
 static const std::string MAP_TMX_FILE_PATH = "Map/testPlatform.tmx";
-// 相机放大倍率
+// 1080P时的相机放大倍率，其它分辨率按照比例调整,必须是16：9
 static const float CAM_SCALE = 2;
 
 class TestScene : public cocos2d::Layer
@@ -38,7 +38,7 @@ private:
 	// 玩家对象
 	Player* player;
 	// 跟随点
-	Node* followPoint;
+	//Node* followPoint;
 	// 出生点
 	Vec2 birthPlace;
 	// 当前地图
