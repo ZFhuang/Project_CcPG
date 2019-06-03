@@ -1,7 +1,8 @@
 #include "MainController.h"
 #include "GameManager.h"
-#include "Character/Player.h"
-#include <ctime>
+#include "Character\Player.h"
+#include "proj.win32\res\MainConfig.h"
+
 
 MainController::MainController()
 {
@@ -38,21 +39,26 @@ void MainController::update(float dt)
 {
 	// 刷新当前帧
 	this->dt = dt;
-	// 是否可以操作
-	if (sysMove == true)
-		sysCtrl();
-	else
+	// 刷新计时器
+	timer();
+	// 是否在系统模式
+	if (isSysMode) {
+		sysMode();
+	}
+	else {
+		// 按键按住响应
 		keyPress();
-	// 环境处理(重力，风向之类)
-	environment();
-	// 判定临时状态
-	condition();
-	// 矫正新状态
-	auto Condition = getNewPos(player->getSpeed());
-	//CCLOG("%f, %f", player->getSpeed().x, player->getSpeed().y);
-	// 应用新位置
-	player->toNewPos(Condition.newPos);
-	player->update(dt);
+		// 环境处理(重力，风向之类)
+		environment();
+		// 判定临时状态
+		condition();
+		// 矫正新状态
+		auto Condition = getNewPos(player->getSpeed());
+		//CCLOG("%f, %f", player->getSpeed().x, player->getSpeed().y);
+		// 应用新位置
+		player->toNewPos(Condition.newPos);
+		player->update(dt);
+	}
 }
 
 // 初始化按键监听器
@@ -83,71 +89,73 @@ void MainController::addKeyListener()
 void MainController::keyClick(EventKeyboard::KeyCode code)
 {
 	//CCLOG("%d",code);
-	switch (code)
-	{
-	case EventKeyboard::KeyCode::KEY_A:
-		clickDirX = -1;
-		break;
-	case EventKeyboard::KeyCode::KEY_D:
-		clickDirX = 1;
-		break;
-	case EventKeyboard::KeyCode::KEY_S:
-		clickDirY = -1;
-		break;
-	case EventKeyboard::KeyCode::KEY_W:
-		clickDirY = 1;
-		break;
-	case  EventKeyboard::KeyCode::KEY_K:
-		player->jump();
-		break;
-	case EventKeyboard::KeyCode::KEY_J:
-		player->hold(true);
-		break;
-	case EventKeyboard::KeyCode::KEY_L:
-		//dash的按键判断
-		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
-			if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
-				//WD
-				player->dash(2);
+	if (!isSysMode) {
+		switch (code)
+		{
+		case EventKeyboard::KeyCode::KEY_A:
+			clickDirX = -1;
+			break;
+		case EventKeyboard::KeyCode::KEY_D:
+			clickDirX = 1;
+			break;
+		case EventKeyboard::KeyCode::KEY_S:
+			clickDirY = -1;
+			break;
+		case EventKeyboard::KeyCode::KEY_W:
+			clickDirY = 1;
+			break;
+		case  EventKeyboard::KeyCode::KEY_K:
+			player->jump();
+			break;
+		case EventKeyboard::KeyCode::KEY_J:
+			player->hold(true);
+			break;
+		case EventKeyboard::KeyCode::KEY_L:
+			//dash的按键判断
+			if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
+				if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
+					//WD
+					player->dash(2);
+				}
+				else if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
+					//DS
+					player->dash(4);
+				}
+				else {
+					//单个的D
+					player->dash(3);
+				}
+			}
+			else if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
+				if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
+					//AW
+					player->dash(8);
+				}
+				else if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
+					//SA
+					player->dash(6);
+				}
+				else {
+					//单个的A
+					player->dash(7);
+				}
+			}
+			else if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
+				//单个的W
+				player->dash(1);
 			}
 			else if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
-				//DS
-				player->dash(4);
+				//单个的S
+				player->dash(5);
 			}
 			else {
-				//单个的D
-				player->dash(3);
+				//没有匹配到的按键
+				player->dash(0);
 			}
+			break;
+		default:
+			break;
 		}
-		else if(keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
-			if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
-				//AW
-				player->dash(8);
-			}
-			else if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
-				//SA
-				player->dash(6);
-			}
-			else {
-				//单个的A
-				player->dash(7);
-			}
-		}
-		else if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
-			//单个的W
-			player->dash(1);
-		}
-		else if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
-			//单个的S
-			player->dash(5);
-		}
-		else {
-			//没有匹配到的按键
-			player->dash(0);
-		}
-		break;
-	default:
-		break;
 	}
 }
 
@@ -161,19 +169,19 @@ void MainController::keyPress()
 
 	// 按键按下时的处理
 		// 左右
-		if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
-			player->run(1);
-		}
-		if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
-			player->run(-1);
-		}
-		// 上下
-		if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
-			player->climb(1);
-		}
-		if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
-			player->climb(-1);
-		}
+	if (keymap[EventKeyboard::KeyCode::KEY_D] == true && clickDirX >= 0) {
+		player->run(1);
+	}
+	if (keymap[EventKeyboard::KeyCode::KEY_A] == true && clickDirX <= 0) {
+		player->run(-1);
+	}
+	// 上下
+	if (keymap[EventKeyboard::KeyCode::KEY_W] == true && clickDirY >= 0) {
+		player->climb(1);
+	}
+	if (keymap[EventKeyboard::KeyCode::KEY_S] == true && clickDirY <= 0) {
+		player->climb(-1);
+	}
 
 	if (keymap[EventKeyboard::KeyCode::KEY_A] == false && keymap[EventKeyboard::KeyCode::KEY_D] == false) {
 		// 左右键都放开时
@@ -188,9 +196,18 @@ void MainController::keyPress()
 	}
 }
 
-void MainController::sysCtrl()
+void MainController::sysMode()
 {
-
+	// 环境处理(重力，风向之类)
+	environment();
+	// 判定临时状态
+	condition();
+	// 矫正新状态
+	auto Condition = getNewPos(player->getSpeed());
+	//CCLOG("%f, %f", player->getSpeed().x, player->getSpeed().y);
+	// 应用新位置
+	player->toNewPos(Condition.newPos);
+	player->update(dt);
 }
 
 // 环境力
@@ -210,49 +227,50 @@ void MainController::environment()
 void MainController::keyRelease(EventKeyboard::KeyCode code)
 {
 	//CCLOG("%d", code);
-
-	switch (code)
-	{
-		//前面一段是为了优化wasd按下次序不受影响的手感
-	case EventKeyboard::KeyCode::KEY_D:
-	{
-		player->setAnimation(AniState::IDLE);
-		--clickDirX;
-		break;
-	}
-	case EventKeyboard::KeyCode::KEY_A:
-	{
-		player->setAnimation(AniState::IDLE);
-		++clickDirX;
-		break;
-	}
-	case EventKeyboard::KeyCode::KEY_W:
-	{
-		player->setAnimation(AniState::IDLE);
-		--clickDirY;
-		break;
-	}
-	case EventKeyboard::KeyCode::KEY_S:
-	{
-		player->setAnimation(AniState::IDLE);
-		++clickDirY;
-		break;
-	}
-	case EventKeyboard::KeyCode::KEY_K:
-	{
-		player->setAnimation(AniState::FALL);
-		// 停止跳跃
-		player->jumpend();
-		break;
-	}
-	case EventKeyboard::KeyCode::KEY_J:
-	{
-		// 放开墙壁
-		player->hold(false);
-		break;
-	}
-	default:
-		break;
+	if (!isSysMode) {
+		switch (code)
+		{
+			//前面一段是为了优化wasd按下次序不受影响的手感
+		case EventKeyboard::KeyCode::KEY_D:
+		{
+			player->setAnimation(AniState::IDLE);
+			--clickDirX;
+			break;
+		}
+		case EventKeyboard::KeyCode::KEY_A:
+		{
+			player->setAnimation(AniState::IDLE);
+			++clickDirX;
+			break;
+		}
+		case EventKeyboard::KeyCode::KEY_W:
+		{
+			player->setAnimation(AniState::IDLE);
+			--clickDirY;
+			break;
+		}
+		case EventKeyboard::KeyCode::KEY_S:
+		{
+			player->setAnimation(AniState::IDLE);
+			++clickDirY;
+			break;
+		}
+		case EventKeyboard::KeyCode::KEY_K:
+		{
+			player->setAnimation(AniState::FALL);
+			// 停止跳跃
+			player->jumpend();
+			break;
+		}
+		case EventKeyboard::KeyCode::KEY_J:
+		{
+			// 放开墙壁
+			player->hold(false);
+			break;
+		}
+		default:
+			break;
+		}
 	}
 }
 
@@ -260,7 +278,7 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 void MainController::condition()
 {
 	auto Condition = getNewPos(player->getSpeed());
-	CCLOG("%f, %f", player->getSpeed().x, player->getSpeed().y);
+	//CCLOG("%f, %f", player->getSpeed().x, player->getSpeed().y);
 
 	if (Condition.yCol == -1) {
 		// 落地
@@ -283,7 +301,19 @@ void MainController::condition()
 		// 离开墙
 		player->slip(Condition.xCol);
 	}
-	CCLOG("%d", Condition.xCol);
+	//CCLOG("%d", Condition.xCol);
+}
+
+void MainController::timer()
+{
+	if (sysTimer > 0) {
+		isSysMode = true;
+		sysTimer -= dt;
+		if (sysTimer <= 0) {
+			isSysMode = false;
+			sysTimer = 0;
+		}
+	}
 }
 
 // 返回可达的新位置和碰撞检测

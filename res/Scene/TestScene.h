@@ -3,16 +3,14 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "proj.win32\res\MainConfig.h"
-#include "proj.win32\res\Character/Player.h"
-#include "proj.win32\res\GameManager.h"
-#include "proj.win32\res\MainController.h"
 USING_NS_CC;
 
-//地图tag,通过tag来区分读入的不同地图
-static const int MAP_TAG = 111;
+class Player;
+class GameManager;
+class MainController;
+
 //地图的xml文件位置
-static const string MAP_TMX_FILE_PATH = "Map/testPlatform.tmx";
+static const std::string MAP_TMX_FILE_PATH = "Map/testPlatform.tmx";
 
 class TestScene : public cocos2d::Layer
 {
@@ -34,7 +32,8 @@ private:
 	// 玩家对象
 	Player* player;
 	// 物理世界指针
-	PhysicsWorld* pw;
+	cocos2d::PhysicsWorld* pw;
+	Vec2 birthPlace;
 
 	// 加载地图
 	void loadMap(std::string mapPath);

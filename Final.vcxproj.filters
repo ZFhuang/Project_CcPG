@@ -28,6 +28,9 @@
     <Filter Include="resource\Character\Player">
       <UniqueIdentifier>{4c05fcee-fd80-4e0a-a9a5-d5fe920a5775}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Snare">
+      <UniqueIdentifier>{2767cb82-4f03-4cd3-b013-f9a25ba3186d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="res\MainController.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="res\Snare\Needle.cpp">
+      <Filter>src\Snare</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="res\MainController.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Snare\Needle.h">
+      <Filter>src\Snare</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

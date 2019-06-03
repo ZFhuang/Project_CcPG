@@ -1,4 +1,7 @@
 #include"Player.h"
+//#include "proj.win32\res\GameManager.h"
+//#include "proj.win32\res\MainController.h"
+//#include "proj.win32\res\Snare\Needle.h"
 
 Player::Player()
 {
@@ -409,7 +412,7 @@ void Player::fall(float speed)
 		if (isSliping) {
 			addSpeedY(speed / 2);
 			if (Speed.y > 0) {
-				setSpeedY(Speed.y / 3);
+				setSpeedY(Speed.y / 2);
 			}
 			if (Speed.y < -MAX_SLIP)
 				setSpeedY(-MAX_SLIP);

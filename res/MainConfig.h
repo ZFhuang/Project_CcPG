@@ -1,4 +1,22 @@
 #pragma once
+#include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\GameManager.h"
+#include "proj.win32\res\Snare\Needle.h"
+#include "cocos2d.h"
+#include <string>
 
-//背景层的图层名
-#define MAP_BG_LAYER_NAME "background"
+//地图的图层名
+static const std::string BACKGROUND_LAYER = "Background";
+static const std::string PLATFORM_LAYER ="Platform";
+static const std::string SNARE_LAYER = "Snare";
+static const std::string TARGET_LAYER = "Target";
+static const std::string OBJECT_LAYER = "Object";
+
+//地图tag,通过tag来区分读入的不同地图
+//测试地图
+static const int TEST_SCENE = 0;
+
+//图块标号
+static const int NEEDLE = 27;
+static const int BIRTH = 4;
+static const int WIN = 21;

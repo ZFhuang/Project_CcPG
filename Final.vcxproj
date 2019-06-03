@@ -154,6 +154,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClCompile Include="res\GameManager.cpp" />
     <ClCompile Include="res\MainController.cpp" />
     <ClCompile Include="res\Scene\TestScene.cpp" />
+    <ClCompile Include="res\Snare\Needle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -163,6 +164,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="res\MainConfig.h" />
     <ClInclude Include="res\MainController.h" />
     <ClInclude Include="res\Scene\TestScene.h" />
+    <ClInclude Include="res\Snare\Needle.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">

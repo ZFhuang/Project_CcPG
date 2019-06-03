@@ -4,25 +4,30 @@
 #define __GAME_MANAGER_H__
 
 #include "cocos2d.h"
+
 USING_NS_CC;
-using namespace cocos2d;
 
 #define GM() GameManager::getInstance()
 
-class GameManager : public Ref
+class GameManager : public cocos2d::Ref
 {
 public:
 	GameManager();
 	virtual ~GameManager();
 	virtual bool init();
 	static GameManager* getInstance();
-	// 获取精灵相对于地图的坐标
-	static Vec2 getMapPosition(TMXTiledMap* map, Node* node);
-	// 获取精灵指定位置的图块编号
-	static int getTileID(TMXTiledMap* map, Node* node);
+	//// 获取精灵相对于地图的坐标
+	//static cocos2d::Vec2 getMapPosition(cocos2d::TMXTiledMap* map, cocos2d::Node* node);
+	//// 获取精灵指定位置的图块编号
+	//static int getTileID(cocos2d::TMXTiledMap* map, cocos2d::Node* node);
+
+	void nowScene(int tag);
+	void restartScene();
+	void startScene(int sceneIndex);
 
 private:
 	static GameManager* m_gameManager;
+	int nowSceneTag=-1;
 };
 
 #endif

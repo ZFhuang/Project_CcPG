@@ -1,17 +1,16 @@
 ///玩家操控的角色类
 
 #pragma once
-
-#include"proj.win32\res\GameManager.h"
-
-using namespace std;
+#include<string>
+#include"cocos2d.h"
 
 //速度即每秒改变的像素
 //每个图块是32*32的
+using namespace cocos2d;
 
 static const int PLAYER_TAG = 110;
-static int PLAYER_WIDTH = 40;
-static int PLAYER_HEIGHT = 50;
+static int PLAYER_WIDTH = 30;
+static int PLAYER_HEIGHT = 45;
 
 // 角色最大X移动速度
 static const float  MAX_RUN = 220;
@@ -43,7 +42,7 @@ static const int	DASH_TIMES = 1;
 
 
 // 序列帧动画路径数组
-static string PLAYER_IMG_PATH[4] = {
+static std::string PLAYER_IMG_PATH[4] = {
 	"Character/player/run1.png",
 	"Character/player/run2.png",
 	"Character/player/run3.png",
@@ -65,15 +64,15 @@ public:
 	Player();
 	~Player();
 	// 初始化
-	void init(Vec2 pos);
+	void init(cocos2d::Vec2 pos);
 	// 设置将要播放的动画状态
 	void setAnimation(AniState state);
 	// 以速度向目的地移动
-	bool moveTo(Vec2 pos, Vec2 speed);
+	bool moveTo(cocos2d::Vec2 pos, cocos2d::Vec2 speed);
 	// 移动
-	void toNewPos(Vec2 pos);
+	void toNewPos(cocos2d::Vec2 pos);
 	// 返回此精灵
-	Sprite* getSpite();
+	cocos2d::Sprite* getSpite();
 	// 时钟调用
 	void update(float dt);
 
@@ -100,19 +99,18 @@ public:
 	// 移动阻力
 	void slow(float speed);
 	// 风阻
-	void wind(float speed);
+	//void wind(float speed);
 	// 返回当前速度
-	Vec2 getSpeed();
+	cocos2d::Vec2 getSpeed();
 
 private:
 	AniState nowAni = AniState::FALL;
 	int life;
-	clock_t energy = 0;
-	Animate* animate = nullptr;
-	Sprite* center = nullptr;
+	cocos2d::Animate* animate = nullptr;
+	cocos2d::Sprite* center = nullptr;
 
 	// 当前速度
-	Vec2 Speed = Vec2(0, 0);
+	cocos2d::Vec2 Speed = cocos2d::Vec2(0, 0);
 	// 是否在地面
 	bool isGround = false;
 	// 是否在跳跃
