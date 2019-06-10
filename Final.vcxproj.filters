@@ -39,9 +39,6 @@
     <ClCompile Include="res\Character\Player.cpp">
       <Filter>src\Character</Filter>
     </ClCompile>
-    <ClCompile Include="res\Scene\TestScene.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="res\AppDelegate.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -54,6 +51,15 @@
     <ClCompile Include="res\Snare\Needle.cpp">
       <Filter>src\Snare</Filter>
     </ClCompile>
+    <ClCompile Include="res\Snare\Battery.cpp">
+      <Filter>src\Snare</Filter>
+    </ClCompile>
+    <ClCompile Include="res\Scene\MainScene.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="res\Snare\Win.cpp">
+      <Filter>src\Snare</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -61,9 +67,6 @@
     </ClInclude>
     <ClInclude Include="res\Character\Player.h">
       <Filter>src\Character</Filter>
-    </ClInclude>
-    <ClInclude Include="res\Scene\TestScene.h">
-      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="res\AppDelegate.h">
       <Filter>src</Filter>
@@ -78,6 +81,15 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="res\Snare\Needle.h">
+      <Filter>src\Snare</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Snare\Battery.h">
+      <Filter>src\Snare</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Scene\MainScene.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Snare\Win.h">
       <Filter>src\Snare</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,18 +1,22 @@
-#include "TestScene.h"
+#include "MainScene.h"
 #include "proj.win32\res\Character\Player.h"
 #include "proj.win32\res\MainController.h"
 #include "proj.win32\res\Snare\Needle.h"
+#include "proj.win32\res\Snare\Battery.h"
+#include "proj.win32\res\Snare\Win.h"
 #include "proj.win32\res\MainConfig.h"
 #include "proj.win32\res\GameManager.h"
 
+extern int nowSceneIdx;
+extern bool sceneIdxLock;
 
-cocos2d::Scene* TestScene::createScene()
+cocos2d::Scene* MainScene::createScene()
 {
 	// 'scene' is an autorelease object
 	auto scene = Scene::create();
 
 	// 'layer' is an autorelease object
-	auto layer = TestScene::create();
+	auto layer = MainScene::create();
 
 	// add layer as a child to scene
 	scene->addChild(layer);
@@ -21,37 +25,77 @@ cocos2d::Scene* TestScene::createScene()
 	return scene;
 }
 
-void TestScene::loadMap(std::string mapPath)
+TMXTiledMap * MainScene::selectMap()
+{
+	TMXTiledMap* tileMap=nullptr;
+	switch (nowSceneIdx)
+	{
+	case 0:
+		tileMap = TMXTiledMap::create(MAP_TEST);
+		break;
+	case 1:
+		tileMap = TMXTiledMap::create(MAP_01);
+		break;
+	case 2:
+		tileMap = TMXTiledMap::create(MAP_02);
+		break;
+	default:
+		//重启关卡
+		tileMap = TMXTiledMap::create(MAP_TEST);
+		break;
+	}
+	sceneIdxLock = true;
+	return tileMap;
+}
+
+void MainScene::initMap()
+{
+	// 读取地图子部件包括终点
+	TMXLayer* snare = map->getLayer(SNARE_LAYER);
+	int w = map->getMapSize().width;
+	int h = map->getMapSize().height;
+	for (int x = 0; x < w; x++) {
+		for (int y = 0; y < h; y++) {
+			Sprite* sprite = snare->getTileAt(Vec2(x, y));
+			auto ID = snare->getTileGIDAt(Vec2(x, y));
+			if (!sprite)	// 防止sprite为NULL
+				continue;
+			if (ID == NEEDLE) {
+				auto needle = new Needle();
+				needle->init(sprite, player, gameManager);
+				this->addChild(needle);
+			}
+			else if (ID == BATTERY) {
+				auto battery = new Battery();
+				battery->init(sprite, player);
+				this->addChild(battery);
+			}
+			else if (ID == WIN) {
+				auto win = new Win();
+				win->init(sprite, player, gameManager);
+				this->addChild(win);
+			}
+		}
+	}
+}
+
+void MainScene::loadMap()
 {
 	// 加载地图
-	map = TMXTiledMap::create(mapPath);
+	map = selectMap();
 	if (map != NULL)
 	{
 		Size visibleSize = Director::getInstance()->getVisibleSize();
-		map->setTag(TEST_SCENE);
-		map->setName("TestScene");
+		map->setName("MainScene");
 		map->setPosition(Vec2(0, 0));
 		this->addChild(map, 2);
 
-		// 初始化SNARE_LAYER
-		TMXLayer* snare = map->getLayer(SNARE_LAYER);
+		initMap();
+
+		// 载入TARGET_LAYER出生点(1*3,位置会是其平均)
+		TMXLayer* target = map->getLayer(TARGET_LAYER);
 		int w = map->getMapSize().width;
 		int h = map->getMapSize().height;
-		for (int x = 0; x < w; x++) {
-			for (int y = 0; y < h; y++) {
-				Sprite* sprite = snare->getTileAt(Vec2(x, y));
-				if (!sprite)	// 防止sprite为NULL
-					continue;
-				if (snare->getTileGIDAt(Vec2(x, y)) == NEEDLE) {
-					auto needle = new Needle();
-					needle->init(sprite, player, gameManager);
-					this->addChild(needle);
-				}
-			}
-		}
-
-		// 载入TARGET_LAYER出生点(必须是4个方块组合成的大方块，位置会是其平均)和终点
-		TMXLayer* target = map->getLayer(TARGET_LAYER);
 		birthPlace = Vec2(0, 0);
 		for (int x = 0; x < w; x++) {
 			for (int y = 0; y < h; y++) {
@@ -61,6 +105,8 @@ void TestScene::loadMap(std::string mapPath)
 				if (target->getTileGIDAt(Vec2(x, y)) == BIRTH) {
 					birthPlace.x += sprite->getPositionX();
 					birthPlace.y += sprite->getPositionY();
+					// 隐藏起点
+					sprite->setVisible(false);
 				}
 			}
 		}
@@ -69,9 +115,6 @@ void TestScene::loadMap(std::string mapPath)
 		birthPlace.x = birthPlace.x / 4 + player->getSprite()->getContentSize().width / 2;
 		birthPlace.y = birthPlace.y / 4 + player->getSprite()->getContentSize().width / 2;
 		player->toNewPos(birthPlace);
-
-		// 记录当前地图标号
-		gameManager->nowScene(TEST_SCENE);
 	}
 	else
 	{
@@ -80,7 +123,7 @@ void TestScene::loadMap(std::string mapPath)
 	}
 }
 
-void TestScene::loadCharacter()
+void MainScene::loadCharacter()
 {
 	// 添加玩家
 	player = new Player();
@@ -88,7 +131,7 @@ void TestScene::loadCharacter()
 	this->addChild(player->getSprite(), 10);
 }
 
-void TestScene::loadCamera()
+void MainScene::loadCamera()
 {
 	//新建一个用户摄像机
 	camera = Camera::create();
@@ -134,40 +177,8 @@ void TestScene::loadCamera()
 	//camera->runAction(Follow::create(followPoint));
 }
 
-void TestScene::cameraFollow()
+void MainScene::cameraFollow()
 {
-	////在移动矩形中修改位置
-	//auto pos = player->getPos();
-	//if (cameraRange->size.width > 0) {
-	//	if ((pos.x > cameraRange->getMinX()) &&
-	//		(pos.x < cameraRange->getMaxX())) {
-	//		followPoint->setPositionX(pos.x);
-	//	}
-	//	else if ((pos.x < cameraRange->getMinX())) {
-	//		followPoint->setPositionX(cameraRange->getMinX());
-	//	}
-	//	else if ((pos.x > cameraRange->getMaxX())) {
-	//		followPoint->setPositionX(cameraRange->getMaxX());
-	//	}
-	//}
-	//if (cameraRange->size.height > 0) {
-	//	if ((pos.y > cameraRange->getMinY()) &&
-	//		(pos.y < cameraRange->getMaxY())) {
-	//		followPoint->setPositionY(pos.y);
-	//	}
-	//	else if ((pos.y < cameraRange->getMinY())) {
-	//		followPoint->setPositionY(cameraRange->getMinY());
-	//	}
-	//	else if ((pos.y > cameraRange->getMaxY())) {
-	//		followPoint->setPositionY(cameraRange->getMaxY());
-	//	}
-	//}
-	//followPoint->setPositionX(this->getContentSize().width / 2 - followPoint->getPositionX());
-	//followPoint->setPositionY(this->getContentSize().height/2 - followPoint->getPositionY());
-	//CCLOG("fo:%f %f", followPoint->getPositionX(), followPoint->getPositionY());
-	//CCLOG("pl:%f %f", player->getSprite()->getPositionX(), player->getSprite()->getPositionY());
-	//CCLOG("ca:%f %f", camera->getPositionX(), camera->getPositionY());
-
 	//在移动矩形中修改位置
 	auto pos = player->getPos();
 	if (cameraRange->size.width > 0) {
@@ -196,7 +207,7 @@ void TestScene::cameraFollow()
 	}
 }
 
-bool TestScene::init()
+bool MainScene::init()
 {
 	if (!Layer::init())
 	{
@@ -212,13 +223,13 @@ bool TestScene::init()
 	loadCharacter();
 
 	// 加载地图
-	loadMap(MAP_TMX_FILE_PATH);
+	loadMap();
 
 	// 加载摄像机
 	loadCamera();
 
 	// 加载控制器
-	controller = MainController::getInstance(player, this, TEST_SCENE);
+	controller = MainController::getInstance(player,this, map);
 
 	// 设置游戏逻辑回调
 	this->scheduleUpdate();
@@ -232,7 +243,7 @@ bool TestScene::init()
 	return true;
 }
 
-void TestScene::update(float dt)
+void MainScene::update(float dt)
 {
 	// 控制器回调
 	controller->update(dt);

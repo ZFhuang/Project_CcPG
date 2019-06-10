@@ -14,17 +14,17 @@ MainController::~MainController()
 }
 
 MainController* MainController::controller = NULL;
-MainController* MainController::getInstance(Player* in, cocos2d::Layer* layer, int maptag)
+MainController* MainController::getInstance(Player* in, Layer* layer, TMXTiledMap *map)
 {
 	//将此控制器与场景和精灵绑定
 	if (controller == NULL)
 	{
 		controller = new MainController();
 	}
-	if (in != nullptr&&layer != nullptr) {
+	if (in != nullptr&&map != nullptr) {
 		controller->player = in;
 		controller->layer = layer;
-		controller->map = (TMXTiledMap *)layer->getChildByTag(maptag);
+		controller->map = map;
 		return controller;
 	}
 	return NULL;

@@ -102,6 +102,8 @@ public:
 	void slow(float speed);
 	// 风阻
 	//void wind(float speed);
+	// 得到电池
+	bool getBattery();
 	// 返回当前速度
 	cocos2d::Vec2 getSpeed();
 

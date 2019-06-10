@@ -3,18 +3,17 @@
 #pragma once
 
 #include "cocos2d.h"
+#include<string>
 USING_NS_CC;
 
 class Player;
 class GameManager;
 class MainController;
 
-//地图的xml文件位置
-static const std::string MAP_TMX_FILE_PATH = "Map/testPlatform.tmx";
 // 1080P时的相机放大倍率，其它分辨率按照比例调整,必须是16：9
 static const float CAM_SCALE = 2;
 
-class TestScene : public cocos2d::Layer
+class MainScene : public cocos2d::Layer
 {
 public:
 	// 初始化
@@ -24,7 +23,7 @@ public:
 	// 创建场景
 	static cocos2d::Scene* createScene();
 	// implement the "static create()" method manually
-	CREATE_FUNC(TestScene);
+	CREATE_FUNC(MainScene);
 
 private:
 	// 总控对象
@@ -37,15 +36,17 @@ private:
 	Rect* cameraRange;
 	// 玩家对象
 	Player* player;
-	// 跟随点
-	//Node* followPoint;
 	// 出生点
 	Vec2 birthPlace;
 	// 当前地图
 	TMXTiledMap *map;
 
-	// 加载地图
-	void loadMap(std::string mapPath);
+	// 选择地图
+	TMXTiledMap* selectMap();
+	// 初始化地图部件
+	void initMap();
+	// 读取地图
+	void loadMap();
 	// 加载角色（不只是玩家）
 	void loadCharacter();
 	// 加载摄像机

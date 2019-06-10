@@ -153,8 +153,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClCompile Include="res\Character\Player.cpp" />
     <ClCompile Include="res\GameManager.cpp" />
     <ClCompile Include="res\MainController.cpp" />
-    <ClCompile Include="res\Scene\TestScene.cpp" />
+    <ClCompile Include="res\Scene\MainScene.cpp" />
+    <ClCompile Include="res\Snare\Battery.cpp" />
     <ClCompile Include="res\Snare\Needle.cpp" />
+    <ClCompile Include="res\Snare\Win.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
@@ -163,8 +165,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="res\GameManager.h" />
     <ClInclude Include="res\MainConfig.h" />
     <ClInclude Include="res\MainController.h" />
-    <ClInclude Include="res\Scene\TestScene.h" />
+    <ClInclude Include="res\Scene\MainScene.h" />
+    <ClInclude Include="res\Snare\Battery.h" />
     <ClInclude Include="res\Snare\Needle.h" />
+    <ClInclude Include="res\Snare\Win.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">

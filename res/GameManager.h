@@ -8,6 +8,9 @@
 USING_NS_CC;
 
 #define GM() GameManager::getInstance()
+extern int nowSceneIdx;
+// 同步锁
+extern bool sceneIdxLock;
 
 class GameManager : public cocos2d::Ref
 {
@@ -21,13 +24,12 @@ public:
 	//// 获取精灵指定位置的图块编号
 	//static int getTileID(cocos2d::TMXTiledMap* map, cocos2d::Node* node);
 
-	void nowScene(int tag);
+	void nextScene();
 	void restartScene();
 	void startScene(int sceneIndex);
 
 private:
 	static GameManager* m_gameManager;
-	int nowSceneTag=-1;
 };
 
 #endif

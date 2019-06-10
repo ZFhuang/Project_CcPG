@@ -21,7 +21,7 @@ public:
 	MainController();
 	virtual ~MainController();
 	// 工厂函数，需要所控制的物体及所控制的层传入
-	static MainController* getInstance(Player* in, cocos2d::Layer* layer, int maptag);
+	static MainController* getInstance(Player* in, Layer* layer, TMXTiledMap * map);
 	// 控制器内部的回调
 	void update(float dt);
 	// 初始化

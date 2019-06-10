@@ -1,7 +1,4 @@
 #include"Player.h"
-//#include "proj.win32\res\GameManager.h"
-//#include "proj.win32\res\MainController.h"
-//#include "proj.win32\res\Snare\Needle.h"
 
 Player::Player()
 {
@@ -528,6 +525,19 @@ void Player::slow(float speed)
 				}
 			}
 		}
+	}
+}
+
+// 恢复冲刺次数
+bool Player::getBattery()
+{
+	//这行也可以去掉，这样更有趣些，就可以做些类似空中攒能量的关卡
+	if (dashNum < DASH_TIMES) {
+		dashNum++;
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 

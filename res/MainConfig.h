@@ -12,11 +12,14 @@ static const std::string SNARE_LAYER = "Snare";
 static const std::string TARGET_LAYER = "Target";
 static const std::string OBJECT_LAYER = "Object";
 
-//地图tag,通过tag来区分读入的不同地图
 //测试地图
-static const int TEST_SCENE = 0;
+// 地图的xml文件位置
+static const std::string MAP_TEST = "Map/testPlatform.tmx";
+static const std::string MAP_01 = "Map/Level1.tmx";
+static const std::string MAP_02 = "Map/Level2.tmx";
 
 //图块标号
 static const int NEEDLE = 27;
 static const int BIRTH = 4;
 static const int WIN = 21;
+static const int BATTERY = 11;

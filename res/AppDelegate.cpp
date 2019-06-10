@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "Scene\TestScene.h"
+#include "Scene\MainScene.h"
 
 USING_NS_CC;
 
@@ -41,7 +41,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	director->setAnimationInterval(1.0 / 60);
 
 	// 载入初始场景
-	auto scene = TestScene::createScene();
+	auto scene = MainScene::createScene();
 		 
 	// 启动
 	director->runWithScene(scene);	
