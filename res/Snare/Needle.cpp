@@ -2,11 +2,16 @@
 #include "proj.win32\res\GameManager.h"
 #include "proj.win32\res\Character\Player.h"
 
+bool Needle::hit = false;
+
 void Needle::update(float dt)
 {
 	if (box->intersectsRect(player->getSprite()->getBoundingBox())) {
-		// ×²µ½Õë
-		gameManager->restartScene();
+		if (Needle::hit == false) {
+			// ×²µ½Õë
+			gameManager->restartScene();
+			Needle::hit = true;
+		}
 	}
 }
 
@@ -15,6 +20,7 @@ bool Needle::init(Sprite *sprite, Player *player, GameManager *gameManager,int d
 	this->sprite = sprite;
 	this->player = player;
 	this->gameManager = gameManager;
+	Needle::hit = false;
 
 	// ¼ÆËãÅö×²ºÐ
 	this->box = new Rect();

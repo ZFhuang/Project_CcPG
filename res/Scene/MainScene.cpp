@@ -17,6 +17,8 @@ cocos2d::Scene* MainScene::createScene()
 	// 'layer' is an autorelease object
 	auto layer = MainScene::create();
 
+	layer->setTag(10);
+
 	// add layer as a child to scene
 	scene->addChild(layer);
 
@@ -143,6 +145,7 @@ void MainScene::loadCharacter()
 	player = new Player();
 	player->init(Vec2(0, 0));
 	this->addChild(player->getSprite(), 10);
+	player->toNewPos(Vec2(-10, -10));
 }
 
 void MainScene::loadCamera()
@@ -168,8 +171,6 @@ void MainScene::loadCamera()
 	float cam_scale = CAM_SCALE* (this->getContentSize().height / 1080);
 	camera->setScaleX(camera->getScaleX() / cam_scale);
 	camera->setScaleY(camera->getScaleY() / cam_scale);
-	//followPoint->setPositionX(sX / 2);
-	//followPoint->setPositionY(sY / 2);
 
 	//计算相机的可移动空间
 	auto rangeXMin = 0 + this->getContentSize().width / cam_scale / 2;
@@ -221,12 +222,8 @@ void MainScene::cameraFollow()
 	}
 }
 
-bool MainScene::init()
+void MainScene::onEnterTransitionDidFinish()
 {
-	if (!Layer::init())
-	{
-		return false;
-	}
 
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -254,7 +251,7 @@ bool MainScene::init()
 	// 启动时锁住0.1s操作
 	controller->sysTimer = 0.1;
 
-	return true;
+	return;
 }
 
 void MainScene::update(float dt)

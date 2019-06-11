@@ -44,7 +44,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 	auto scene = MainScene::createScene();
 		 
 	// Æô¶¯
-	director->runWithScene(scene);	
+	director->runWithScene(scene);
 
 	return true;
 }

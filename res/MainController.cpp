@@ -32,6 +32,7 @@ MainController* MainController::getInstance(Player* in, Layer* layer, TMXTiledMa
 
 void MainController::init()
 {
+	keymap.clear();
 	addKeyListener();
 }
 

@@ -17,7 +17,7 @@ class MainScene : public cocos2d::Layer
 {
 public:
 	// 初始化
-	virtual bool init();
+	void onEnterTransitionDidFinish();
 	// 主循环
 	void update(float dt);
 	// 创建场景

@@ -48,5 +48,7 @@ void GameManager::startScene(int sceneIndex)
 {
 	nowSceneIdx = sceneIndex;
 	CCLOG("GM: %d", nowSceneIdx);
-	Director::getInstance()->replaceScene(MainScene::createScene());
+	auto scene = MainScene::createScene();
+	//动态切换场景似乎要push和pop才有效
+	Director::sharedDirector()->replaceScene(TransitionJumpZoom::create(0.5, scene));
 }

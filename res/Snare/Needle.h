@@ -16,4 +16,5 @@ private:
 	Player *player;
 	GameManager *gameManager;
 	cocos2d::Rect *box;
+	static bool hit;
 };
