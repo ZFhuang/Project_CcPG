@@ -6,7 +6,6 @@
 #include "proj.win32\res\Scene\MainScene.h"
 
 int nowSceneIdx = 0;
-bool sceneIdxLock = true;
 
 GameManager::GameManager()
 {
@@ -36,11 +35,8 @@ GameManager* GameManager::getInstance()
 
 void GameManager::nextScene()
 {
-	if (sceneIdxLock) {
-		nowSceneIdx++;
-		startScene(nowSceneIdx);
-		sceneIdxLock = false;
-	}
+	nowSceneIdx++;
+	startScene(nowSceneIdx);
 }
 
 void GameManager::restartScene()
@@ -51,5 +47,6 @@ void GameManager::restartScene()
 void GameManager::startScene(int sceneIndex)
 {
 	nowSceneIdx = sceneIndex;
-	CCDirector::sharedDirector()->replaceScene(MainScene::createScene());
+	CCLOG("GM: %d", nowSceneIdx);
+	Director::getInstance()->replaceScene(MainScene::createScene());
 }

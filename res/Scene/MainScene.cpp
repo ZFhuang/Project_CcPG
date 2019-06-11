@@ -8,7 +8,6 @@
 #include "proj.win32\res\GameManager.h"
 
 extern int nowSceneIdx;
-extern bool sceneIdxLock;
 
 cocos2d::Scene* MainScene::createScene()
 {
@@ -27,7 +26,7 @@ cocos2d::Scene* MainScene::createScene()
 
 TMXTiledMap * MainScene::selectMap()
 {
-	TMXTiledMap* tileMap=nullptr;
+	TMXTiledMap* tileMap = nullptr;
 	switch (nowSceneIdx)
 	{
 	case 0:
@@ -44,7 +43,6 @@ TMXTiledMap * MainScene::selectMap()
 		tileMap = TMXTiledMap::create(MAP_TEST);
 		break;
 	}
-	sceneIdxLock = true;
 	return tileMap;
 }
 
@@ -60,9 +58,24 @@ void MainScene::initMap()
 			auto ID = snare->getTileGIDAt(Vec2(x, y));
 			if (!sprite)	// 防止sprite为NULL
 				continue;
-			if (ID == NEEDLE) {
+			if (ID == NEEDLE_UP) {
 				auto needle = new Needle();
-				needle->init(sprite, player, gameManager);
+				needle->init(sprite, player, gameManager, 1);
+				this->addChild(needle);
+			}
+			else if (ID == NEEDLE_DOWN) {
+				auto needle = new Needle();
+				needle->init(sprite, player, gameManager, 2);
+				this->addChild(needle);
+			}
+			else if (ID == NEEDLE_LEFT) {
+				auto needle = new Needle();
+				needle->init(sprite, player, gameManager, 3);
+				this->addChild(needle);
+			}
+			else if (ID == NEEDLE_RIGHT) {
+				auto needle = new Needle();
+				needle->init(sprite, player, gameManager, 4);
 				this->addChild(needle);
 			}
 			else if (ID == BATTERY) {
@@ -72,7 +85,7 @@ void MainScene::initMap()
 			}
 			else if (ID == WIN) {
 				auto win = new Win();
-				win->init(sprite, player, gameManager);
+				win->init(sprite, player, gameManager, nowSceneIdx);
 				this->addChild(win);
 			}
 		}
@@ -83,6 +96,7 @@ void MainScene::loadMap()
 {
 	// 加载地图
 	map = selectMap();
+	CCLOG("MS: %d", nowSceneIdx);
 	if (map != NULL)
 	{
 		Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -151,7 +165,7 @@ void MainScene::loadCamera()
 	Vec3 eyePos = Vec3(sX / 2, sY / 2, eyePosOld.z);
 	camera->setPosition3D(eyePos);
 	// 自适应缩放
-	float cam_scale =CAM_SCALE* (this->getContentSize().height/1080);
+	float cam_scale = CAM_SCALE* (this->getContentSize().height / 1080);
 	camera->setScaleX(camera->getScaleX() / cam_scale);
 	camera->setScaleY(camera->getScaleY() / cam_scale);
 	//followPoint->setPositionX(sX / 2);
@@ -229,7 +243,7 @@ bool MainScene::init()
 	loadCamera();
 
 	// 加载控制器
-	controller = MainController::getInstance(player,this, map);
+	controller = MainController::getInstance(player, this, map);
 
 	// 设置游戏逻辑回调
 	this->scheduleUpdate();

@@ -9,8 +9,6 @@ USING_NS_CC;
 
 #define GM() GameManager::getInstance()
 extern int nowSceneIdx;
-// Í¬²½Ëø
-extern bool sceneIdxLock;
 
 class GameManager : public cocos2d::Ref
 {

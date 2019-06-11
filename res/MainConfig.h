@@ -19,7 +19,10 @@ static const std::string MAP_01 = "Map/Level1.tmx";
 static const std::string MAP_02 = "Map/Level2.tmx";
 
 //Í¼¿é±êºÅ
-static const int NEEDLE = 27;
+static const int NEEDLE_LEFT = 27;
+static const int NEEDLE_RIGHT = 27;
+static const int NEEDLE_UP = 27;
+static const int NEEDLE_DOWN = 27;
 static const int BIRTH = 4;
 static const int WIN = 21;
 static const int BATTERY = 11;
