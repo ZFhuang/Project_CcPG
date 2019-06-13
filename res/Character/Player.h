@@ -102,6 +102,12 @@ public:
 	void slow(float speed);
 	// 风阻
 	//void wind(float speed);
+	// 初始化钥匙数量
+	void initKeyNum(int num);
+	// 得到钥匙
+	Sprite* getLastKey(Sprite* newKey);
+	// 返回钥匙数量
+	int getKeyNum();
 	// 得到电池
 	bool getBattery();
 	// 返回当前速度
@@ -109,7 +115,7 @@ public:
 
 private:
 	AniState nowAni = AniState::FALL;
-	int life;
+	int keyNum;
 	cocos2d::Animate* animate = nullptr;
 	cocos2d::Sprite* center = nullptr;
 
@@ -131,6 +137,8 @@ private:
 	int dashNum = 1;
 	// 当前水平面向的方向
 	bool isRight = true;
+	// 最后一个钥匙指针
+	Sprite* lastKey;
 
 	// 与上帧的间隔
 	float dt=0;

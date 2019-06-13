@@ -155,6 +155,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClCompile Include="res\MainController.cpp" />
     <ClCompile Include="res\Scene\MainScene.cpp" />
     <ClCompile Include="res\Snare\Battery.cpp" />
+    <ClCompile Include="res\Snare\Key.cpp" />
     <ClCompile Include="res\Snare\Needle.cpp" />
     <ClCompile Include="res\Snare\Win.cpp" />
   </ItemGroup>
@@ -167,6 +168,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)\Resources\" /D /E /I /F /Y
     <ClInclude Include="res\MainController.h" />
     <ClInclude Include="res\Scene\MainScene.h" />
     <ClInclude Include="res\Snare\Battery.h" />
+    <ClInclude Include="res\Snare\Key.h" />
     <ClInclude Include="res\Snare\Needle.h" />
     <ClInclude Include="res\Snare\Win.h" />
   </ItemGroup>

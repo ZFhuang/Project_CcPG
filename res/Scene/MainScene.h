@@ -40,6 +40,8 @@ private:
 	Vec2 birthPlace;
 	// 当前地图
 	TMXTiledMap *map;
+	// 目标钥匙数量
+	int keyNum;
 
 	// 选择地图
 	TMXTiledMap* selectMap();

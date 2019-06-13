@@ -60,6 +60,9 @@
     <ClCompile Include="res\Snare\Win.cpp">
       <Filter>src\Snare</Filter>
     </ClCompile>
+    <ClCompile Include="res\Snare\Key.cpp">
+      <Filter>src\Snare</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -90,6 +93,9 @@
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="res\Snare\Win.h">
+      <Filter>src\Snare</Filter>
+    </ClInclude>
+    <ClInclude Include="res\Snare\Key.h">
       <Filter>src\Snare</Filter>
     </ClInclude>
   </ItemGroup>

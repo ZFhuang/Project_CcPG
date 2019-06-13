@@ -6,7 +6,8 @@ extern int nowSceneIdx;
 
 void Win::update(float dt)
 {
-	if (sprite->getBoundingBox().intersectsRect(player->getSprite()->getBoundingBox())) {
+	//允许少收集一个钥匙
+	if (player->getKeyNum()<=1 && sprite->getBoundingBox().intersectsRect(player->getSprite()->getBoundingBox())) {
 		//到达终点
 		if (nowSceneIdx == initSceneIdx) {
 			gameManager->nextScene();

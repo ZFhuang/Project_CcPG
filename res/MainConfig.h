@@ -26,3 +26,4 @@ static const int NEEDLE_DOWN = 27;
 static const int BIRTH = 4;
 static const int WIN = 21;
 static const int BATTERY = 11;
+static const int KEY = 3;

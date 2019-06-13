@@ -23,6 +23,8 @@ void Player::init(Vec2 pos)
 		// 刷新大小
 		PLAYER_WIDTH = center->getContentSize().width;
 		PLAYER_HEIGHT = center->getContentSize().height;
+		keyNum = 0;
+		lastKey = nullptr;
 
 		// 添加物理碰撞盒
 		auto size = center->getContentSize();
@@ -526,6 +528,30 @@ void Player::slow(float speed)
 			}
 		}
 	}
+}
+
+void Player::initKeyNum(int num)
+{
+	keyNum = num;
+}
+
+Sprite * Player::getLastKey(Sprite * newKey)
+{
+	keyNum -= 1;
+	if (lastKey == nullptr) {
+		lastKey = newKey;
+		return center;
+	}
+	else {
+		Sprite * temp = lastKey;
+		lastKey = newKey;
+		return temp;
+	}
+}
+
+int Player::getKeyNum()
+{
+	return keyNum;
 }
 
 // 恢复冲刺次数

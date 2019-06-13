@@ -4,6 +4,7 @@
 #include "proj.win32\res\Snare\Needle.h"
 #include "proj.win32\res\Snare\Battery.h"
 #include "proj.win32\res\Snare\Win.h"
+#include "proj.win32\res\Snare\Key.h"
 #include "proj.win32\res\MainConfig.h"
 #include "proj.win32\res\GameManager.h"
 
@@ -54,6 +55,7 @@ void MainScene::initMap()
 	TMXLayer* snare = map->getLayer(SNARE_LAYER);
 	int w = map->getMapSize().width;
 	int h = map->getMapSize().height;
+	keyNum = 0;
 	for (int x = 0; x < w; x++) {
 		for (int y = 0; y < h; y++) {
 			Sprite* sprite = snare->getTileAt(Vec2(x, y));
@@ -90,8 +92,15 @@ void MainScene::initMap()
 				win->init(sprite, player, gameManager, nowSceneIdx);
 				this->addChild(win);
 			}
+			else if (ID == KEY) {
+				auto key = new Key();
+				key->init(sprite, player);
+				this->addChild(key);
+				keyNum++;
+			}
 		}
 	}
+	player->initKeyNum(keyNum);
 }
 
 void MainScene::loadMap()
