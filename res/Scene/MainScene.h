@@ -9,6 +9,7 @@ USING_NS_CC;
 class Player;
 class GameManager;
 class MainController;
+class UI;
 
 // 1080P时的相机放大倍率，其它分辨率按照比例调整,必须是16：9
 static const float CAM_SCALE = 2;
@@ -30,6 +31,8 @@ private:
 	GameManager* gameManager;
 	// 主控制器
 	MainController* controller;
+	// UI
+	UI* ui;
 	// 摄像机
 	Camera* camera;
 	// 相机移动范围
@@ -53,6 +56,8 @@ private:
 	void loadCharacter();
 	// 加载摄像机
 	void loadCamera();
+	// 加载UI
+	void loadUI();
 	// 摄像机在地图范围内跟随角色
 	void cameraFollow();
 };

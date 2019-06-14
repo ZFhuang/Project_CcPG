@@ -1,6 +1,7 @@
 #include "MainController.h"
 #include "GameManager.h"
 #include "Character\Player.h"
+#include "UI.h"
 #include "proj.win32\res\MainConfig.h"
 
 
@@ -14,7 +15,7 @@ MainController::~MainController()
 }
 
 MainController* MainController::controller = NULL;
-MainController* MainController::getInstance(Player* in, Layer* layer, TMXTiledMap *map)
+MainController* MainController::getInstance(Player* in, Layer* layer, UI* ui,TMXTiledMap *map)
 {
 	//将此控制器与场景和精灵绑定
 	if (controller == NULL)
@@ -24,6 +25,7 @@ MainController* MainController::getInstance(Player* in, Layer* layer, TMXTiledMa
 	if (in != nullptr&&map != nullptr) {
 		controller->player = in;
 		controller->layer = layer;
+		controller->ui = ui;
 		controller->map = map;
 		return controller;
 	}
@@ -42,7 +44,7 @@ void MainController::update(float dt)
 	this->dt = dt;
 	// 刷新计时器
 	timer();
-	// 是否在系统模式
+	// 是否在系统UI模式
 	if (isSysMode) {
 		sysMode();
 	}
@@ -72,6 +74,16 @@ void MainController::addKeyListener()
 			keyClick(keyCode);
 		}
 		keymap[keyCode] = true;
+		if (sysTimer > 0) {
+			if (keyCode == EventKeyboard::KeyCode::KEY_ENTER) {
+				if (ui->nextLine() == false) {
+					sysTimer = 0.5;
+				}
+				else {
+					sysTimer = 99;
+				}
+			}
+		}
 	};
 	// 记录放开
 	listener->onKeyReleased = [=](EventKeyboard::KeyCode keyCode, Event* event) {
@@ -311,8 +323,13 @@ void MainController::timer()
 		isSysMode = true;
 		sysTimer -= dt;
 		if (sysTimer <= 0) {
-			isSysMode = false;
-			sysTimer = 0;
+			if (ui->nextLine() == false) {
+				isSysMode = false;
+				sysTimer = 0;
+			}
+			else {
+				sysTimer = 99;
+			}
 		}
 	}
 }

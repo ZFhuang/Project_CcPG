@@ -7,6 +7,7 @@
 #include "proj.win32\res\Snare\Key.h"
 #include "proj.win32\res\MainConfig.h"
 #include "proj.win32\res\GameManager.h"
+#include "proj.win32\res\UI.h"
 
 extern int nowSceneIdx;
 
@@ -163,12 +164,10 @@ void MainScene::loadCamera()
 	camera = Camera::create();
 	camera->setCameraFlag(CameraFlag::USER1);
 	cameraRange = new Rect();
-	//followPoint = Node::create();
 
 	//让此场景切换为用户摄像机
 	this->setCameraMask((short)CameraFlag::USER1);
 	this->addChild(camera);
-	//this->addChild(followPoint);
 
 	//初始化相机参数
 	auto sX = map->getContentSize().width;
@@ -198,7 +197,16 @@ void MainScene::loadCamera()
 
 	//设置为可移动矩形
 	cameraRange->setRect(rangeXMin, rangeYMin, rangeXMax - rangeXMin, rangeYMax - rangeYMin);
-	//camera->runAction(Follow::create(followPoint));
+}
+
+void MainScene::loadUI()
+{
+	// 初始化对话器
+	ui = new UI();
+	ui->init(controller);
+	ui->loadTextFile("Story/0-1.txt");
+	this->addChild(ui->talker, 10);
+	this->addChild(ui->text, 10);
 }
 
 void MainScene::cameraFollow()
@@ -242,6 +250,9 @@ void MainScene::onEnterTransitionDidFinish()
 	// 加载场景角色
 	loadCharacter();
 
+	// 加载UI
+	loadUI();
+
 	// 加载地图
 	loadMap();
 
@@ -249,7 +260,7 @@ void MainScene::onEnterTransitionDidFinish()
 	loadCamera();
 
 	// 加载控制器
-	controller = MainController::getInstance(player, this, map);
+	controller = MainController::getInstance(player, this,ui, map);
 
 	// 设置游戏逻辑回调
 	this->scheduleUpdate();
@@ -258,7 +269,7 @@ void MainScene::onEnterTransitionDidFinish()
 	controller->init();
 
 	// 启动时锁住0.1s操作
-	controller->sysTimer = 0.1;
+	controller->sysTimer = 99;
 
 	return;
 }
@@ -267,6 +278,8 @@ void MainScene::update(float dt)
 {
 	// 控制器回调
 	controller->update(dt);
+	// 对话器回调,需要与相机绑定
+	ui->update(dt,camera->getPosition());
 	// 摄像机跟随相机跟随点
 	cameraFollow();
 }

@@ -5,6 +5,7 @@
 USING_NS_CC;
 
 class Player;
+class UI;
 
 // 摩擦力
 static const float SCENE_X = -1000;
@@ -21,7 +22,7 @@ public:
 	MainController();
 	virtual ~MainController();
 	// 工厂函数，需要所控制的物体及所控制的层传入
-	static MainController* getInstance(Player* in, Layer* layer, TMXTiledMap * map);
+	static MainController* getInstance(Player* in, Layer* layer, UI* ui,TMXTiledMap * map);
 	// 控制器内部的回调
 	void update(float dt);
 	// 初始化
@@ -32,6 +33,8 @@ public:
 private:
 	// 所控制的物体指针
 	Player* player;
+	// UI指针
+	UI* ui;
 	// 所控制的层指针
 	cocos2d::Layer* layer;
 	// 碰撞要用到的tiledmap

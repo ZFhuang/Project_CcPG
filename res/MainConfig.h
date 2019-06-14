@@ -5,6 +5,9 @@
 #include "cocos2d.h"
 #include <string>
 
+//对话背景图片位置
+static const std::string TALKER_BACKGROUND = "UI/Talker.png";
+
 //地图的图层名
 static const std::string BACKGROUND_LAYER = "Background";
 static const std::string PLATFORM_LAYER ="Platform";
