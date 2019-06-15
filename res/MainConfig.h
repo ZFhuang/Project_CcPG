@@ -20,7 +20,7 @@ static const std::string STORY_6 = "../Resources/Story/6.txt";
 static const std::string STORY_7 = "../Resources/Story/7.txt";
 static const std::string STORY_8 = "../Resources/Story/8.txt";
 static const std::string STORY_9 = "../Resources/Story/9.txt";
-static const std::string STORY_10 = "../Resources/Story/9.txt";
+static const std::string STORY_10 = "../Resources/Story/10.txt";
 
 
 
