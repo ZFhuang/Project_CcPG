@@ -6,6 +6,7 @@
 #include "proj.win32\res\Scene\MainScene.h"
 
 int nowSceneIdx = 0;
+int nowStoryIdx = 0;
 
 GameManager::GameManager()
 {

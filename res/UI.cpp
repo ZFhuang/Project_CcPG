@@ -26,6 +26,7 @@ bool UI::init(MainController * controller)
 	talker->setVisible(false);
 	text = cocos2d::Label::createWithSystemFont(" ", "GB2312", 24);
 	text->setVisible(false);
+	fin = nullptr;
 	return true;
 }
 
@@ -39,20 +40,28 @@ void UI::loadTextFile(std::string path)
 
 bool UI::nextLine()
 {
-	if (fin == nullptr) {
+	if (fin == nullptr)
 		return false;
-	}
-	std::string s;
-	if (std::getline(*fin, s)) {
-		text->setString(s);
-		return true;
+	std::string filename;
+	std::string line;
+
+	if (fin) // 有该文件
+	{
+		if (std::getline(*fin, line)) {
+			text->setString(line);
+			return true;
+		}
+		else
+		{
+			text->setString(" ");
+			talker->setVisible(false);
+			text->setVisible(false);
+			fin->close();
+			fin = nullptr;
+			return false;
+		}
 	}
 	else {
-		text->setString(" ");
-		talker->setVisible(false);
-		text->setVisible(false);
-		fin->close();
-		fin = nullptr;
 		return false;
 	}
 }

@@ -328,7 +328,7 @@ void MainController::timer()
 				sysTimer = 0;
 			}
 			else {
-				sysTimer = 99;
+				sysTimer = 10;
 			}
 		}
 	}

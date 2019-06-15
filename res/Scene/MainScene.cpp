@@ -10,6 +10,7 @@
 #include "proj.win32\res\UI.h"
 
 extern int nowSceneIdx;
+extern int nowStoryIdx;
 
 cocos2d::Scene* MainScene::createScene()
 {
@@ -34,13 +35,37 @@ TMXTiledMap * MainScene::selectMap()
 	switch (nowSceneIdx)
 	{
 	case 0:
-		tileMap = TMXTiledMap::create(MAP_TEST);
+		tileMap = TMXTiledMap::create(MAP_00);
 		break;
 	case 1:
 		tileMap = TMXTiledMap::create(MAP_01);
 		break;
 	case 2:
 		tileMap = TMXTiledMap::create(MAP_02);
+		break;
+	case 3:
+		tileMap = TMXTiledMap::create(MAP_03);
+		break;
+	case 4:
+		tileMap = TMXTiledMap::create(MAP_04);
+		break;
+	case 5:
+		tileMap = TMXTiledMap::create(MAP_05);
+		break;
+	case 6:
+		tileMap = TMXTiledMap::create(MAP_06);
+		break;
+	case 7:
+		tileMap = TMXTiledMap::create(MAP_07);
+		break;
+	case 8:
+		tileMap = TMXTiledMap::create(MAP_08);
+		break;
+	case 9:
+		tileMap = TMXTiledMap::create(MAP_09);
+		break;
+	case 10:
+		tileMap = TMXTiledMap::create(MAP_10);
 		break;
 	default:
 		//重启关卡
@@ -100,6 +125,9 @@ void MainScene::initMap()
 				keyNum++;
 			}
 		}
+	}
+	if (keyNum == 1) {
+		keyNum = 2;
 	}
 	player->initKeyNum(keyNum);
 }
@@ -204,7 +232,61 @@ void MainScene::loadUI()
 	// 初始化对话器
 	ui = new UI();
 	ui->init(controller);
-	ui->loadTextFile("Story/0-1.txt");
+	if (nowStoryIdx == nowSceneIdx) {
+		//输出剧情
+		switch (nowStoryIdx)
+		{
+		case 0:
+			ui->loadTextFile(STORY_0);
+			nowStoryIdx++;
+			break;
+		case 1:
+			ui->loadTextFile(STORY_1);
+			nowStoryIdx++;
+			break;
+		case 2:
+			ui->loadTextFile(STORY_2);
+			nowStoryIdx++;
+			break;
+		case 3:
+			ui->loadTextFile(STORY_3);
+			nowStoryIdx++;
+			break;
+		case 4:
+			ui->loadTextFile(STORY_4);
+			nowStoryIdx++;
+			break;
+		case 5:
+			ui->loadTextFile(STORY_5);
+			nowStoryIdx++;
+			break;
+		case 6:
+			ui->loadTextFile(STORY_6);
+			nowStoryIdx++;
+			break;
+		case 7:
+			ui->loadTextFile(STORY_7);
+			nowStoryIdx++;
+			break;
+		case 8:
+			ui->loadTextFile(STORY_8);
+			nowStoryIdx++;
+			break;
+		case 9:
+			ui->loadTextFile(STORY_9);
+			nowStoryIdx++;
+			break;
+		case 10:
+			ui->loadTextFile(STORY_10);
+			nowStoryIdx++;
+			break;
+		default:
+			break;
+		}
+	}
+	else {
+		ui->loadTextFile(STORY_DEAD);
+	}
 	this->addChild(ui->talker, 10);
 	this->addChild(ui->text, 10);
 }
@@ -250,11 +332,11 @@ void MainScene::onEnterTransitionDidFinish()
 	// 加载场景角色
 	loadCharacter();
 
-	// 加载UI
-	loadUI();
-
 	// 加载地图
 	loadMap();
+
+	// 加载UI
+	loadUI();
 
 	// 加载摄像机
 	loadCamera();
@@ -269,7 +351,10 @@ void MainScene::onEnterTransitionDidFinish()
 	controller->init();
 
 	// 启动时锁住0.1s操作
-	controller->sysTimer = 99;
+	if (nowStoryIdx == nowSceneIdx)
+		controller->sysTimer = 10;
+	else
+		controller->sysTimer = 0.1;
 
 	return;
 }

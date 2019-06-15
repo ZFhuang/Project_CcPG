@@ -17,10 +17,6 @@ public:
 	virtual ~GameManager();
 	virtual bool init();
 	static GameManager* getInstance();
-	//// 获取精灵相对于地图的坐标
-	//static cocos2d::Vec2 getMapPosition(cocos2d::TMXTiledMap* map, cocos2d::Node* node);
-	//// 获取精灵指定位置的图块编号
-	//static int getTileID(cocos2d::TMXTiledMap* map, cocos2d::Node* node);
 
 	void nextScene();
 	void restartScene();
