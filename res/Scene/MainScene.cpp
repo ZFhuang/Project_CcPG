@@ -113,12 +113,12 @@ void MainScene::initMap()
 				battery->init(sprite, player);
 				this->addChild(battery);
 			}
-			else if (ID == WIN) {
+			else if (ID == WIN1|| ID == WIN2 || ID == WIN3 || ID == WIN4 || ID == WIN5 || ID == WIN6 || ID == WIN7 || ID == WIN8 || ID == WIN9) {
 				auto win = new Win();
 				win->init(sprite, player, gameManager, nowSceneIdx);
 				this->addChild(win);
 			}
-			else if (ID == KEY) {
+			else if (ID == KEY1||ID==KEY2) {
 				auto key = new Key();
 				key->init(sprite, player);
 				this->addChild(key);

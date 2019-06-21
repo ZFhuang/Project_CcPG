@@ -4,11 +4,13 @@
 #define __GAME_MANAGER_H__
 
 #include "cocos2d.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
 #define GM() GameManager::getInstance()
 extern int nowSceneIdx;
+extern CocosDenshion::SimpleAudioEngine *audio;
 
 class GameManager : public cocos2d::Ref
 {

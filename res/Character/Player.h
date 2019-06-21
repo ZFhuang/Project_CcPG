@@ -1,8 +1,9 @@
 ///玩家操控的角色类
 
 #pragma once
-#include<string>
-#include"cocos2d.h"
+#include <string>
+#include "cocos2d.h"
+#include "cocostudio/CocoStudio.h"
 
 //速度即每秒改变的像素
 //每个图块是32*32的
@@ -38,24 +39,22 @@ static const float	TIMER_PREJUMP = 0.1;
 static const float	TIMER_OUT = 0.1;
 // 最大冲刺次数
 static const int	DASH_TIMES = 1;
-
-
+// 动画大小X
+static const float	SCALEX = 0.1;
+// 动画大小Y
+static const float	SCALEY = 0.1;
 
 // 序列帧动画路径数组
-static std::string PLAYER_IMG_PATH[4] = {
-	"Character/player/run1.png",
-	"Character/player/run2.png",
-	"Character/player/run3.png",
-	"Character/player/run4.png"
-};
+static std::string PLAYER_ANIFILE_INFO = "../Resources/Animation/ProtagonistAnimation.ExportJson";
+static std::string PLAYER_IMG = "Character/player/playerBackground.png";
 
 // 动画状态量
 enum AniState {
 	IDLE = 0,	// 常态
 	RUN = 1,	// 跑步
 	JUMP = 2,	// 跳跃中
-	FALL = 3,	// 下降中
-	WALL = 4	// 滑墙中
+	DASH = 3,	// 冲刺中
+	CLIMB = 4	// 墙上
 };
 
 class Player
@@ -66,7 +65,7 @@ public:
 	// 初始化
 	void init(cocos2d::Vec2 pos);
 	// 设置将要播放的动画状态
-	void setAnimation(AniState state);
+	void setAnimation();
 	// 以速度向目的地移动
 	bool moveTo(cocos2d::Vec2 pos, cocos2d::Vec2 speed);
 	// 移动
@@ -114,9 +113,9 @@ public:
 	cocos2d::Vec2 getSpeed();
 
 private:
-	AniState nowAni = AniState::FALL;
+	AniState nowAni = AniState::JUMP;
 	int keyNum;
-	cocos2d::Animate* animate = nullptr;
+	cocostudio::Armature* m_armature;
 	cocos2d::Sprite* center = nullptr;
 
 	// 当前速度
@@ -141,7 +140,7 @@ private:
 	Sprite* lastKey;
 
 	// 与上帧的间隔
-	float dt=0;
+	float dt = 0;
 	// 离开地面计时器，用来做边缘跳跃容错
 	float fallTimer = -1;
 	// 离开墙面计时器，用来做反身跳容错

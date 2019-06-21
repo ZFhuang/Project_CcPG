@@ -12,7 +12,7 @@ void Player::init(Vec2 pos)
 {
 	if (center == nullptr) {
 		// 添加玩家
-		center = Sprite::create(PLAYER_IMG_PATH[0]);
+		center = Sprite::create(PLAYER_IMG);
 		// 强制设置大小
 		center->setContentSize(Size(PLAYER_WIDTH, PLAYER_HEIGHT));
 		// 设置tag
@@ -30,62 +30,44 @@ void Player::init(Vec2 pos)
 		auto size = center->getContentSize();
 		auto body = PhysicsBody::createBox(center->getContentSize());
 		body->setGravityEnable(false);
-		//center->setPhysicsBody(body);
 		// 初始位置
 		center->setPosition(pos);
+
+		cocostudio::ArmatureDataManager::getInstance()->addArmatureFileInfo(PLAYER_ANIFILE_INFO);
+		m_armature = cocostudio::Armature::create("ProtagonistAnimation");
+		//校准一下初始值
+		m_armature->setPosition(Vec2(PLAYER_WIDTH/2, PLAYER_HEIGHT/2));
+		m_armature->setScaleX(SCALEX);
+		m_armature->setScaleY(SCALEY);
+		center->addChild(m_armature);
+		m_armature->getAnimation()->play("jump");
+		nowAni = JUMP;
 	}
-	setAnimation(AniState::IDLE);
 }
 
-void Player::setAnimation(AniState state)
+void Player::setAnimation()
 {
-	if (state == nowAni) {
-		return;
-	}
-	nowAni = state;
-	//CCLOG("%d", nowAni);
-
-	// 帧动画向量
-	Vector<SpriteFrame*> frameVector;
-	Animation* animation = nullptr;
-
-	// 各种动画的载入
-	switch (nowAni)
-	{
-	case IDLE:
-	{
-		// 玩家常态动画占位
-		frameVector.pushBack(SpriteFrame::create(PLAYER_IMG_PATH[0], Rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT)));
-		animation = Animation::createWithSpriteFrames(frameVector);
-		animation->setDelayPerUnit(1.0f);
-		break;
-	}
-	case RUN:
-	{
-		// 玩家跑动动画占位
-		for (int i = 0; i < 4; i++)
-		{
-			auto spriteFrame = SpriteFrame::create(PLAYER_IMG_PATH[i], Rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT));
-			frameVector.pushBack(spriteFrame);
+	if (dashTimer == -1) {
+		if (isGround) {
+			if (Speed.x == 0 && nowAni != IDLE) {
+				m_armature->getAnimation()->play("common");
+				nowAni = IDLE;
+			}
 		}
-		animation = Animation::createWithSpriteFrames(frameVector);
-		// 设置播放动画的两帧间隔时间
-		animation->setDelayPerUnit(1.0f / 4.0f);
-		break;
 	}
-	default:
-	{
-		break;
-	}
-	}
-
-	// 启动动画
-	if (animation != nullptr) {
-		// 先停止正在执行的所有动画
-		center->stopAllActions();
-		animate = Animate::create(animation);
-		// 运行新的动画
-		center->runAction(RepeatForever::create(animate));
+	if (!isSliping && !isHolding) {
+		if (Speed.x > 0) {
+			if (m_armature->getScaleX() != 1 * SCALEX)
+			{
+				m_armature->setScaleX(1 * SCALEX);
+			}
+		}
+		else if (Speed.x < 0) {
+			if (m_armature->getScaleX() != -1 * SCALEX)
+			{
+				m_armature->setScaleX(-1 * SCALEX);
+			}
+		}
 	}
 }
 
@@ -140,6 +122,8 @@ void Player::update(float dt)
 	else if (Speed.x < 0) {
 		isRight = false;
 	}
+	// 刷新动画
+	setAnimation();
 }
 
 Vec2 Player::getPos()
@@ -156,6 +140,10 @@ void Player::jump()
 		isGround = false;
 		setSpeedY(JUMPSPEED);
 		prejumpTimer = -1;
+		if (nowAni != JUMP) {
+			m_armature->getAnimation()->play("jump");
+			nowAni = JUMP;
+		}
 	}
 	else if (isSliping && !isJumping) {
 		//反身跳
@@ -165,6 +153,10 @@ void Player::jump()
 		setSpeedX(-MAX_RUN*backDir);
 		prejumpTimer = -1;
 		backjumpTimer = 0;
+		if (nowAni != JUMP) {
+			m_armature->getAnimation()->play("jump");
+			nowAni = JUMP;
+		}
 	}
 	else {
 		if (prejumpTimer < 0)
@@ -186,6 +178,10 @@ void Player::dash(int dir)
 				setSpeedY(0);
 				isJumping = true;
 				isGround = false;
+				if (nowAni != DASH) {
+					m_armature->getAnimation()->play("rightRush");
+					nowAni = DASH;
+				}
 			}
 			else
 			{
@@ -195,6 +191,10 @@ void Player::dash(int dir)
 				setSpeedY(0);
 				isJumping = true;
 				isGround = false;
+				if (nowAni != DASH) {
+					m_armature->getAnimation()->play("rightRush");
+					nowAni = DASH;
+				}
 			}
 			break;
 		case 1:
@@ -203,6 +203,10 @@ void Player::dash(int dir)
 			setSpeedY(MAX_Y*0.8);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("topRush");
+				nowAni = DASH;
+			}
 			break;
 		case 2:
 			// dir 2 WD
@@ -211,6 +215,10 @@ void Player::dash(int dir)
 			setSpeedY(MAX_Y*0.8 / 1.4);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("top-rightRush");
+				nowAni = DASH;
+			}
 			break;
 		case 3:
 			// dir 3 D
@@ -218,6 +226,10 @@ void Player::dash(int dir)
 			setSpeedY(0);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("rightRush");
+				nowAni = DASH;
+			}
 			break;
 		case 4:
 			// dir 4 DS
@@ -225,6 +237,10 @@ void Player::dash(int dir)
 			setSpeedY(-MAX_Y*0.8 / 1.4);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("bottom-rightRush");
+				nowAni = DASH;
+			}
 			break;
 		case 5:
 			// dir 5 S
@@ -232,6 +248,10 @@ void Player::dash(int dir)
 			setSpeedY(-MAX_Y*0.8);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("bottomRush");
+				nowAni = DASH;
+			}
 			break;
 		case 6:
 			// dir 6 SA
@@ -240,6 +260,10 @@ void Player::dash(int dir)
 			setSpeedY(-MAX_Y*0.8 / 1.4);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("bottom-rightRush");
+				nowAni = DASH;
+			}
 			break;
 		case 7:
 			// dir 7 A
@@ -247,6 +271,10 @@ void Player::dash(int dir)
 			setSpeedY(0);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("rightRush");
+				nowAni = DASH;
+			}
 			break;
 		case 8:
 			// dir 8 AW
@@ -255,6 +283,10 @@ void Player::dash(int dir)
 			setSpeedY(MAX_Y*0.8 / 1.4);
 			isJumping = true;
 			isGround = false;
+			if (nowAni != DASH) {
+				m_armature->getAnimation()->play("top-rightRush");
+				nowAni = DASH;
+			}
 			break;
 		default:
 			break;
@@ -294,6 +326,12 @@ void Player::run(int dir)
 			else if (Speed.x < -MAX_RUN) {
 				setSpeedX(-MAX_RUN);
 			}
+			if (isGround) {
+				if (Speed.x != 0 && nowAni != RUN) {
+					m_armature->getAnimation()->play("run");
+					nowAni = RUN;
+				}
+			}
 		}
 		else {
 			//空中加速慢一点
@@ -320,6 +358,24 @@ void Player::climb(int dir)
 			setSpeedY(dir*MAX_CLIMB);
 			//上爬3dt, 不动2dt, 下爬1dt, 落地刷新
 			climbTimer += dt*(dir + 2);
+			if (dir == 0) {
+				if (nowAni == CLIMB) {
+					m_armature->getAnimation()->pause();
+					m_armature->setScaleX(wallDir*SCALEX);
+					nowAni = CLIMB;
+				}
+			}
+			else {
+				if (nowAni != CLIMB) {
+					m_armature->getAnimation()->play("climb");
+					nowAni = CLIMB;
+					m_armature->setScaleX(wallDir*SCALEX);
+				}
+				else {
+					m_armature->getAnimation()->resume();
+					m_armature->setScaleX(wallDir*SCALEX);
+				}
+			}
 		}
 		else {
 			isHolding = false;
@@ -445,6 +501,11 @@ void Player::slip(int wallDir)
 	if (this->wallDir != 0) {
 		isSliping = true;
 		outTimer = -1;
+		if (!isHolding&&nowAni != DASH&&nowAni != CLIMB) {
+			m_armature->getAnimation()->play("rightRush");
+			nowAni = DASH;
+			m_armature->setScaleX(-wallDir*SCALEX);
+		}
 	}
 	else {
 		if (isSliping == true && outTimer < 0)
@@ -488,6 +549,10 @@ void Player::ground(bool isGround)
 	}
 	else {
 		if (fallTimer < 0) {
+			if (!isHolding &&!isSliping&& nowAni != JUMP) {
+				m_armature->getAnimation()->play("jump");
+				nowAni = JUMP;
+			}
 			this->isGround = false;
 		}
 	}

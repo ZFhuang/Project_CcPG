@@ -246,31 +246,26 @@ void MainController::keyRelease(EventKeyboard::KeyCode code)
 			//前面一段是为了优化wasd按下次序不受影响的手感
 		case EventKeyboard::KeyCode::KEY_D:
 		{
-			player->setAnimation(AniState::IDLE);
 			--clickDirX;
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_A:
 		{
-			player->setAnimation(AniState::IDLE);
 			++clickDirX;
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_W:
 		{
-			player->setAnimation(AniState::IDLE);
 			--clickDirY;
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_S:
 		{
-			player->setAnimation(AniState::IDLE);
 			++clickDirY;
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_K:
 		{
-			player->setAnimation(AniState::FALL);
 			// 停止跳跃
 			player->jumpend();
 			break;

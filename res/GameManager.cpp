@@ -4,9 +4,11 @@
 #include "proj.win32\res\MainConfig.h"
 #include "proj.win32\res\Snare\Needle.h"
 #include "proj.win32\res\Scene\MainScene.h"
+#include "SimpleAudioEngine.h"
 
 int nowSceneIdx = 0;
 int nowStoryIdx = 0;
+CocosDenshion::SimpleAudioEngine *audio = CocosDenshion::SimpleAudioEngine::getInstance();
 
 GameManager::GameManager()
 {
@@ -20,6 +22,11 @@ GameManager::~GameManager()
 
 bool GameManager::init()
 {
+	if (!audio->isBackgroundMusicPlaying()) {
+		audio->playBackgroundMusic(MUSIC.c_str(),true);
+		audio->setBackgroundMusicVolume(0.3);
+	}
+	
 	return true;
 }
 

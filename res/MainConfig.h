@@ -22,7 +22,8 @@ static const std::string STORY_8 = "../Resources/Story/8.txt";
 static const std::string STORY_9 = "../Resources/Story/9.txt";
 static const std::string STORY_10 = "../Resources/Story/10.txt";
 
-
+//“Ù¿÷
+static const std::string MUSIC = "../Resources/Story/Dripice - Escape.mp3";
 
 //µÿÕºµƒÕº≤„√˚
 static const std::string BACKGROUND_LAYER = "Background";
@@ -46,12 +47,20 @@ static const std::string MAP_09 = "../Resources/Map/Level9.tmx";
 static const std::string MAP_10 = "../Resources/Map/Level10.tmx";
 
 //ÕºøÈ±Í∫≈
-static const int NEEDLE_LEFT = 27;
-static const int NEEDLE_RIGHT = 27;
-static const int NEEDLE_UP = 27;
-static const int NEEDLE_DOWN = 27;
-static const int BIRTH = 4;
-static const int WIN = 21;
-static const int BATTERY = 11;
-static const int KEY = 3;
-static const int STORY = 29;
+static const int NEEDLE_LEFT = 197;
+static const int NEEDLE_RIGHT = 199;
+static const int NEEDLE_UP = 196;
+static const int NEEDLE_DOWN = 198;
+static const int BIRTH = 106;
+static const int WIN1 = 16;
+static const int WIN2 = 17;
+static const int WIN3 = 18;
+static const int WIN4 = 31;
+static const int WIN5 = 32;
+static const int WIN6 = 33;
+static const int WIN7 = 46;
+static const int WIN8 = 47;
+static const int WIN9 = 48;
+static const int BATTERY = 138;
+static const int KEY1 = 142;
+static const int KEY2 = 144;
