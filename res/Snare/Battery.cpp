@@ -1,6 +1,11 @@
 #include "Battery.h"
 #include "proj.win32\res\GameManager.h"
 #include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\MainConfig.h"
+#include "SimpleAudioEngine.h"
+
+extern CocosDenshion::SimpleAudioEngine *audio;
 
 Battery::Battery()
 {
@@ -34,6 +39,7 @@ void Battery::update(float dt)
 				//接到电池时
 				timer = TIMER;
 				sprite->setVisible(false);
+				audio->playEffect(SOUND_BATTERY.c_str());
 			}
 			else {
 				//无需电池时

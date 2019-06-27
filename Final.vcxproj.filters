@@ -16,18 +16,6 @@
     <Filter Include="src\Scene">
       <UniqueIdentifier>{e303173c-1d23-4e2d-9d64-633512776643}</UniqueIdentifier>
     </Filter>
-    <Filter Include="resource\Map">
-      <UniqueIdentifier>{3434aba0-2213-48a9-8879-6ee6ac8992c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resource\Docs">
-      <UniqueIdentifier>{fb0bc10a-cb33-4383-8e6c-677078693060}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resource\Character">
-      <UniqueIdentifier>{92d9e3a9-ad33-4e83-b19d-607f09b92ea3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resource\Character\Player">
-      <UniqueIdentifier>{4c05fcee-fd80-4e0a-a9a5-d5fe920a5775}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Snare">
       <UniqueIdentifier>{2767cb82-4f03-4cd3-b013-f9a25ba3186d}</UniqueIdentifier>
     </Filter>
@@ -109,44 +97,5 @@
     <ResourceCompile Include="game.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Resources\Map\testPlatform.png">
-      <Filter>resource\Map</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\player1.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\player2.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\player3.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\player4.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\run1.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\run2.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\run3.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-    <Image Include="..\Resources\Character\player\run4.png">
-      <Filter>resource\Character\Player</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\Resources\Docs\Tree.txt">
-      <Filter>resource\Docs</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Resources\Map\testPlatform.tmx">
-      <Filter>resource\Map</Filter>
-    </None>
   </ItemGroup>
 </Project>

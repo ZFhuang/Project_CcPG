@@ -1,5 +1,9 @@
 #include "Key.h"
 #include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\MainConfig.h"
+#include "SimpleAudioEngine.h"
+
+extern CocosDenshion::SimpleAudioEngine *audio;
 
 void Key::update(float dt)
 {
@@ -8,6 +12,7 @@ void Key::update(float dt)
 			//被玩家触发，载入跟踪
 			states = 1;
 			target = player->getLastKey(sprite);
+			audio->playEffect(SOUND_ROBOTBI.c_str());
 		}
 	}
 	else if (states == 1) {

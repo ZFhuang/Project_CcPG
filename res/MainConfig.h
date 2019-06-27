@@ -1,14 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include "proj.win32\res\Character\Player.h"
 #include "proj.win32\res\GameManager.h"
 #include "proj.win32\res\Snare\Needle.h"
 #include "cocos2d.h"
 #include <string>
 
-//¶Ô»°±³¾°Í¼Æ¬Î»ÖÃ
+//ç¼–ç è½¬æ¢ä»¥æ˜¾ç¤ºä¸­æ–‡
+#ifdef WIN32
+#pragma execution_character_set("utf-8")
+#endif
+
+//å¯¹è¯èƒŒæ™¯å›¾ç‰‡ä½ç½®
 static const std::string TALKER_BACKGROUND = "../Resources/UI/Talker.png";
 
-//¾çÇéÎÄ±¾Î»ÖÃ
+//å‰§æƒ…æ–‡æœ¬ä½ç½®
 static const std::string STORY_DEAD = "../Resources/Story/13.txt";
 static const std::string STORY_0 = "../Resources/Story/0.txt";
 static const std::string STORY_1 = "../Resources/Story/1.txt";
@@ -22,17 +27,26 @@ static const std::string STORY_8 = "../Resources/Story/8.txt";
 static const std::string STORY_9 = "../Resources/Story/9.txt";
 static const std::string STORY_10 = "../Resources/Story/10.txt";
 
-//ÒôÀÖ
-static const std::string MUSIC = "../Resources/Story/Dripice - Escape.mp3";
+//éŸ³ä¹
+static const std::string MUSIC = "../Resources/Sounds/JohannSebastianBach.mp3";
 
-//µØÍ¼µÄÍ¼²ãÃû
+//éŸ³æ•ˆ
+static const std::string SOUND_JUMP = "../Resources/Sounds/jump.wav";
+static const std::string SOUND_DEATH = "../Resources/Sounds/death.wav";
+static const std::string SOUND_RUN = "../Resources/Sounds/run.wav";
+static const std::string SOUND_RUSH = "../Resources/Sounds/rush.wav";
+static const std::string SOUND_BATTERY = "../Resources/Sounds/battery.wav";
+static const std::string SOUND_ROBOTBI = "../Resources/Sounds/RobotBi.wav";
+static const std::string SOUND_PASS = "../Resources/Sounds/pass.wav";
+
+//åœ°å›¾çš„å›¾å±‚å
 static const std::string BACKGROUND_LAYER = "Background";
 static const std::string PLATFORM_LAYER ="Platform";
 static const std::string SNARE_LAYER = "Snare";
 static const std::string TARGET_LAYER = "Target";
 static const std::string OBJECT_LAYER = "Object";
 
-// µØÍ¼µÄxmlÎÄ¼şÎ»ÖÃ
+// åœ°å›¾çš„xmlæ–‡ä»¶ä½ç½®
 static const std::string MAP_TEST = "../Resources/Map/testPlatform.tmx";
 static const std::string MAP_00 = "../Resources/Map/Level0.tmx";
 static const std::string MAP_01 = "../Resources/Map/Level1.tmx";
@@ -46,7 +60,7 @@ static const std::string MAP_08 = "../Resources/Map/Level8.tmx";
 static const std::string MAP_09 = "../Resources/Map/Level9.tmx";
 static const std::string MAP_10 = "../Resources/Map/Level10.tmx";
 
-//Í¼¿é±êºÅ
+//å›¾å—æ ‡å·
 static const int NEEDLE_LEFT = 197;
 static const int NEEDLE_RIGHT = 199;
 static const int NEEDLE_UP = 196;

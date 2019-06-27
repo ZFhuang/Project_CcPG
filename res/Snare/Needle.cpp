@@ -1,6 +1,11 @@
 #include "Needle.h"
 #include "proj.win32\res\GameManager.h"
 #include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\Character\Player.h"
+#include "proj.win32\res\MainConfig.h"
+#include "SimpleAudioEngine.h"
+
+extern CocosDenshion::SimpleAudioEngine *audio;
 
 bool Needle::hit = false;
 
@@ -9,6 +14,7 @@ void Needle::update(float dt)
 	if (box->intersectsRect(player->getSprite()->getBoundingBox())) {
 		if (Needle::hit == false) {
 			// ×²µ½Õë
+			audio->playEffect(SOUND_DEATH.c_str());
 			gameManager->restartScene();
 			Needle::hit = true;
 		}

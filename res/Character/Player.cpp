@@ -1,4 +1,8 @@
-#include"Player.h"
+#include "Player.h"
+#include "SimpleAudioEngine.h"
+#include "proj.win32\res\MainConfig.h"
+
+extern CocosDenshion::SimpleAudioEngine *audio;
 
 Player::Player()
 {
@@ -140,9 +144,11 @@ void Player::jump()
 		isGround = false;
 		setSpeedY(JUMPSPEED);
 		prejumpTimer = -1;
+		// ²¥·ÅÌøÔ¾
 		if (nowAni != JUMP) {
 			m_armature->getAnimation()->play("jump");
 			nowAni = JUMP;
+			audio->playEffect(SOUND_JUMP.c_str());
 		}
 	}
 	else if (isSliping && !isJumping) {
@@ -156,6 +162,7 @@ void Player::jump()
 		if (nowAni != JUMP) {
 			m_armature->getAnimation()->play("jump");
 			nowAni = JUMP;
+			audio->playEffect(SOUND_JUMP.c_str());
 		}
 	}
 	else {
@@ -181,6 +188,7 @@ void Player::dash(int dir)
 				if (nowAni != DASH) {
 					m_armature->getAnimation()->play("rightRush");
 					nowAni = DASH;
+					audio->playEffect(SOUND_RUSH.c_str());
 				}
 			}
 			else
@@ -194,6 +202,7 @@ void Player::dash(int dir)
 				if (nowAni != DASH) {
 					m_armature->getAnimation()->play("rightRush");
 					nowAni = DASH;
+					audio->playEffect(SOUND_RUSH.c_str());
 				}
 			}
 			break;
@@ -206,6 +215,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("topRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 2:
@@ -218,6 +228,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("top-rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 3:
@@ -229,6 +240,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 4:
@@ -240,6 +252,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("bottom-rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 5:
@@ -251,6 +264,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("bottomRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 6:
@@ -263,6 +277,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("bottom-rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 7:
@@ -274,6 +289,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		case 8:
@@ -286,6 +302,7 @@ void Player::dash(int dir)
 			if (nowAni != DASH) {
 				m_armature->getAnimation()->play("top-rightRush");
 				nowAni = DASH;
+				audio->playEffect(SOUND_RUSH.c_str());
 			}
 			break;
 		default:
@@ -327,10 +344,24 @@ void Player::run(int dir)
 				setSpeedX(-MAX_RUN);
 			}
 			if (isGround) {
+				if (Speed.x != 0) {
+					runTimer += dt;
+					if (runTimer > TIMER_RUN) {
+						audio->playEffect(SOUND_RUN.c_str());
+						runTimer = 0;
+					}
+				}
+				else {
+					runTimer = -1;
+				}
 				if (Speed.x != 0 && nowAni != RUN) {
 					m_armature->getAnimation()->play("run");
 					nowAni = RUN;
+					runTimer = 1;
 				}
+			}
+			else {
+				runTimer = -1;
 			}
 		}
 		else {
@@ -370,10 +401,12 @@ void Player::climb(int dir)
 					m_armature->getAnimation()->play("climb");
 					nowAni = CLIMB;
 					m_armature->setScaleX(wallDir*SCALEX);
+
 				}
 				else {
 					m_armature->getAnimation()->resume();
 					m_armature->setScaleX(wallDir*SCALEX);
+					audio->playEffect(SOUND_RUN.c_str());
 				}
 			}
 		}
@@ -495,21 +528,23 @@ void Player::headCol()
 void Player::slip(int wallDir)
 {
 	//ÏÂ»¬
-	if (this->wallDir != 0)
-		backDir = this->wallDir;
-	this->wallDir = wallDir;
-	if (this->wallDir != 0) {
-		isSliping = true;
-		outTimer = -1;
-		if (!isHolding&&nowAni != DASH&&nowAni != CLIMB) {
-			m_armature->getAnimation()->play("rightRush");
-			nowAni = DASH;
-			m_armature->setScaleX(-wallDir*SCALEX);
+	if (!isGround) {
+		if (this->wallDir != 0)
+			backDir = this->wallDir;
+		this->wallDir = wallDir;
+		if (this->wallDir != 0) {
+			isSliping = true;
+			outTimer = -1;
+			if (!isHolding&&nowAni != DASH&&nowAni != CLIMB) {
+				m_armature->getAnimation()->play("rightRush");
+				nowAni = DASH;
+				m_armature->setScaleX(-wallDir*SCALEX);
+			}
 		}
-	}
-	else {
-		if (isSliping == true && outTimer < 0)
-			outTimer = 0;
+		else {
+			if (isSliping == true && outTimer < 0)
+				outTimer = 0;
+		}
 	}
 }
 
@@ -552,6 +587,7 @@ void Player::ground(bool isGround)
 			if (!isHolding &&!isSliping&& nowAni != JUMP) {
 				m_armature->getAnimation()->play("jump");
 				nowAni = JUMP;
+				audio->playEffect(SOUND_JUMP.c_str());
 			}
 			this->isGround = false;
 		}

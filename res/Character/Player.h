@@ -37,6 +37,8 @@ static const float	TIMER_FALL = 0.1;
 static const float	TIMER_PREJUMP = 0.1;
 // 反身跳跃容错0.1s
 static const float	TIMER_OUT = 0.1;
+// 走路声音计时1s
+static const float	TIMER_RUN = 0.4;
 // 最大冲刺次数
 static const int	DASH_TIMES = 1;
 // 动画大小X
@@ -153,6 +155,8 @@ private:
 	float dashTimer = -1;
 	// 攀爬计时器，用来作为能量
 	float climbTimer = -1;
+	// 走路计时器，垃圾cocos，用来循环播放
+	float runTimer = -1;
 
 	// 设置X速度
 	void setSpeedX(float x);
